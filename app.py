@@ -4,6 +4,7 @@ import asyncio
 import zipfile
 import signal
 import atexit
+import sys
 from io import BytesIO
 from typing import Dict, List, Set
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
@@ -35,6 +36,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Store active processes and their states
 active_processes: Dict[str, asyncio.Task] = {}
 active_connections: Set[str] = set()
+shutdown_event = asyncio.Event()
 
 def cleanup_for_request(request_id: str):
     """Clean up resources for a specific request."""
@@ -52,10 +54,9 @@ def cleanup_for_request(request_id: str):
     if not active_connections:
         cleanup_files()
 
-# Register cleanup for normal shutdown
-@app.on_event("shutdown")
-async def shutdown_event():
+async def shutdown():
     """Cleanup when the server shuts down."""
+    print("\nCleaning up before exit...")
     # Cancel all active processes
     for process in active_processes.values():
         try:
@@ -67,20 +68,24 @@ async def shutdown_event():
     
     # Clean up all generated files
     cleanup_files()
+    shutdown_event.set()
+
+# Register cleanup for normal shutdown
+@app.on_event("shutdown")
+async def shutdown_event():
+    await shutdown()
 
 # Register cleanup for system signals
 def signal_handler(signum, frame):
     """Handle system signals for cleanup."""
-    print("\nCleaning up before exit...")
-    for process in active_processes.values():
-        try:
-            process.cancel()
-        except Exception:
-            pass
-    active_processes.clear()
-    active_connections.clear()
-    cleanup_files()
-    exit(0)
+    # Create a new event loop for cleanup
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(shutdown())
+    finally:
+        loop.close()
+        sys.exit(0)
 
 # Register signal handlers
 signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
