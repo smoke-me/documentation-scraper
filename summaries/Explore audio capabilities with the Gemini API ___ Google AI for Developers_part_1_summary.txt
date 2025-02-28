@@ -1,0 +1,28 @@
+# Gemini API Audio Capabilities Documentation
+
+## Overview
+The Gemini API enables interaction with audio content, allowing users to describe, summarize, and answer questions related to audio files. 
+
+## Key Features
+- **Audio Analysis**: Responds to prompts about audio, including transcription and segment-specific queries.
+- **Supported Formats**: Accepts various audio format MIME types.
+- **Token Representation**: Each second of audio is represented as 32 tokens (e.g., 1 minute = 1,920 tokens).
+- **Language Support**: Primarily supports English-language speech but can recognize non-speech sounds (e.g., birdsong, sirens).
+- **Audio Length Limit**: Maximum audio length per prompt is 9.5 hours. Multiple files can be included, but the total duration must not exceed this limit.
+- **Audio Processing**: Audio is downsampled to 16 Kbps and multi-channel audio is combined into a single channel.
+
+## Usage
+1. **File Upload**: Use the File API to upload audio files.
+2. **Text Output Generation**: Generate text outputs based on audio inputs.
+
+## Additional Resources
+- **File Prompting Strategies**: Supports multimodal prompting with text, image, audio, and video.
+- **System Instructions**: Customize model behavior for specific use cases.
+- **Safety Guidance**: Implement post-processing and human evaluation to mitigate risks of inaccurate or biased outputs.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates.

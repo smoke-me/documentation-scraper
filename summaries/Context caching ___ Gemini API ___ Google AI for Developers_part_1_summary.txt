@@ -1,0 +1,36 @@
+# Context Caching - Gemini API
+
+## Overview
+The context caching feature in the Gemini API allows users to cache input tokens for repeated use, reducing costs associated with sending the same tokens multiple times.
+
+## Key Features
+- **Caching Mechanism**: Cache input tokens once and refer to them in subsequent requests.
+- **Cost Efficiency**: Using cached tokens can lower operational costs at higher volumes.
+- **Time to Live (TTL)**: Users can set a TTL for cached tokens, defaulting to 1 hour if not specified. There are no minimum or maximum bounds on TTL.
+- **Supported Models**: Available for Gemini 1.5 Pro and Gemini 1.5 Flash.
+
+## Use Cases
+Ideal for scenarios where a substantial initial context is frequently referenced by shorter requests.
+
+## Billing Structure
+- **Cache Token Count**: Billed at a reduced rate for cached tokens in subsequent prompts.
+- **Storage Duration**: Charges apply based on the TTL of cached tokens.
+- **Additional Charges**: Non-cached input tokens and output tokens incur separate charges.
+
+## Requirements
+- Minimum input token count for caching: 32,768 tokens.
+- Maximum input token count: Same as the model's maximum limit.
+- Cached tokens are treated as a prefix to prompts without special distinction.
+
+## Rate Limits
+Standard rate limits for GenerateContent apply, including cached tokens.
+
+## Token Usage
+- Cached token count is included in the `usage_metadata` from cache service operations and in GenerateContent requests.
+
+## Additional Resources
+- For pricing details, refer to the [Gemini API pricing page](#).
+- To learn about token counting, see the [Token guide](#).
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. For more details, refer to the Google Developers Site Policies.

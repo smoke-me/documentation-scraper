@@ -1,0 +1,56 @@
+# Gemini API Documentation
+
+## Overview
+The Gemini API enables developers to integrate Google's advanced AI capabilities into their applications. It supports multimodal inputs, allowing for the processing of text, images, videos, and documents.
+
+## Getting Started
+
+### API Key
+To use the Gemini API, obtain an API key from Google.
+
+### Making Your First API Request
+You can make requests using Python, JavaScript, or cURL.
+
+#### Python Example
+```python
+from google import genai
+
+client = genai.Client(api_key="YOUR_API_KEY")
+response = client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents="Explain how AI works",
+)
+print(response.text)
+```
+
+#### JavaScript Example
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI("YOUR_API_KEY");
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const prompt = "Explain how AI works";
+
+const result = await model.generateContent(prompt);
+console.log(result.response.text());
+```
+
+#### cURL Example
+```bash
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=YOUR_API_KEY" \
+-H 'Content-Type: application/json' \
+-X POST \
+-d '{ "contents": [{ "parts":[{"text": "Explain how AI works"}] }] }'
+```
+
+## Key Features
+- **Multimodal Capabilities**: Process millions of tokens and understand unstructured data.
+- **Customization**: Modify model behavior for specific tasks and tune with your own data.
+- **Structured Responses**: Configure models to respond in JSON format for automated processing.
+
+## Licensing
+- Content: Creative Commons Attribution 4.0 License
+- Code Samples: Apache 2.0 License
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates.

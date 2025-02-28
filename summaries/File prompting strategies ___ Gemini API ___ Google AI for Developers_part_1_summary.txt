@@ -1,0 +1,29 @@
+# Gemini API: File Prompting Strategies
+
+## Overview
+The Gemini API supports multimodal input, allowing users to interact with text, images, and audio. This flexibility enables a variety of tasks, such as generating blog posts based on images.
+
+## Best Practices for Multimodal Prompts
+1. **Be Specific**: Provide clear and concise instructions to minimize misinterpretation.
+2. **Use Examples**: Incorporate few-shot examples to illustrate desired outputs.
+3. **Break Down Tasks**: Divide complex tasks into manageable steps.
+4. **Specify Output Format**: Indicate the required output format (e.g., markdown, JSON).
+5. **Image Placement**: For single-image prompts, place the image before the text for better performance.
+
+## Troubleshooting Strategies
+- **Direct Image References**: If the model fails to draw relevant information, specify which aspects of the image to focus on.
+- **Descriptive Prompts**: Ask the model to describe the image before proceeding with the task to ensure it understands the context.
+- **Step-by-Step Reasoning**: For complex tasks, instruct the model to think step-by-step.
+
+## Sampling Parameters
+When sending requests, adjust the following parameters for optimal results:
+- **Temperature**: Controls randomness in responses. Start at 0.4 for balanced outputs; adjust higher for creativity or lower for determinism.
+- **Top-K**: Determines how many of the most probable tokens are considered. Default is 32; lower values yield less randomness.
+- **Top-P**: Selects tokens until their cumulative probability meets the specified threshold. Default is 1.0; lower values reduce randomness.
+
+## Next Steps
+- Experiment with multimodal prompts using Google AI Studio.
+- Refer to the Prompt Strategies page for additional guidance on prompt design.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. For more details, see Google Developers Site Policies.

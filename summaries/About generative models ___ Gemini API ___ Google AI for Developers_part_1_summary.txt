@@ -1,0 +1,38 @@
+# Gemini API Documentation
+
+## Overview
+The Gemini API provides access to generative AI models capable of creating content from various data inputs, including text, images, and audio. These models function similarly to advanced autocomplete systems, predicting likely outputs based on input prompts.
+
+## Key Features
+- **Content Generation**: Create poetry, stories, and summaries from text prompts.
+- **No ML Expertise Required**: Users can generate content without needing to train models or collect datasets.
+- **Generative Models**: Unlike traditional large language models (LLMs), Gemini models handle multiple data types.
+
+## Prompt Design
+- **Basic Prompts**: Simple instructions like "Write me a poem" can yield effective results.
+- **Few-Shot Prompting**: Utilize patterns to guide the model. For example, using a format like `[country] : [capital]` allows the model to autocomplete based on learned patterns.
+- **Zero-Shot Prompts**: These prompts do not provide examples, relying on the model's pre-existing knowledge.
+
+## Prompt Types
+1. **Zero-Shot**: No examples provided; relies on model knowledge.
+2. **Few-Shot**: Includes examples for the model to replicate.
+3. **Instructional**: Provides clear instructions to guide the model's response.
+
+## Model Parameters
+- **Max Output Tokens**: Limits the number of tokens generated (approx. 4 characters per token).
+- **Temperature**: Controls randomness in responses. A temperature of 0 is deterministic, while higher values allow for more creative outputs.
+- **topK**: Determines how many of the most probable tokens are considered for selection.
+- **topP**: Selects tokens based on cumulative probability until reaching a specified threshold.
+- **Stop Sequences**: Defines a sequence that, when generated, stops further output.
+
+## Generating Responses
+- Responses can be generated through deterministic methods (selecting the most probable token) or stochastic methods (random sampling).
+- The degree of randomness is controlled by the temperature setting.
+
+## Experimentation
+Users are encouraged to experiment with different prompt structures and parameters to optimize model responses.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License, and code samples are under the Apache 2.0 License. 
+
+For more information, refer to the Google Developers Site Policies.

@@ -1,0 +1,37 @@
+# Gemini API: Generating Structured Output
+
+## Overview
+The Gemini API allows users to generate structured JSON output, which is useful for applications requiring automated processing of data. By default, Gemini produces unstructured text, but it can be constrained to respond in JSON format.
+
+## Use Cases
+- Building a database of companies from newspaper articles.
+- Extracting ingredients from recipes with links to grocery websites.
+
+## Generating JSON Responses
+1. **Requesting JSON Output**: In your prompt, specify that you want JSON-formatted output. Note that while Gemini aims to respond in JSON, it may not always guarantee this format.
+2. **Using Response Schema**: For more deterministic responses, include a `responseSchema` field with a specific JSON schema to ensure the output adheres to the expected structure.
+
+## JSON Schema Configuration
+- **Schema Object**: Define the shape of the JSON data using a Schema object, which is a subset of the OpenAPI 3.0 Schema object.
+- **Key Fields**:
+  - `type`: Must be one of the OpenAPI Data Types.
+  - `properties`: Defines the structure of objects.
+  - `required`: Lists required properties.
+  - `propertyOrdering`: Specifies the order of properties in the response.
+
+### Example Schema Representations
+```json
+{ "type": "STRING", "enum": ["a", "b", "c"] }
+{ "type": "INTEGER", "format": "int64" }
+{ "type": "OBJECT", "properties": { "a": { "type": "STRING" }, "b": { "type": "INTEGER" } }, "required": ["a"] }
+```
+
+## Important Considerations
+- **Property Ordering**: The API orders properties alphabetically by default. To maintain a specific order, use the `propertyOrdering[]` field.
+- **Consistency in Examples**: Ensure that examples provided to the model match the property ordering defined in the schema to improve output quality.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License, and code samples are under the Apache 2.0 License. For more information, refer to the Google Developers Site Policies.
+
+## Additional Resources
+- For detailed Schema field documentation, refer to the Schema reference in the Gemini API documentation.

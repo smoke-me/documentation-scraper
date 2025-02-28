@@ -1,0 +1,80 @@
+# Fine-tuning Tutorial for Gemini API
+
+## Overview
+This tutorial provides guidance on fine-tuning the Gemini API text generation model using the Python SDK or REST API (curl). 
+
+## Limitations
+- **Input Size**: Maximum of 40,000 characters per example.
+- **Output Size**: Maximum of 5,000 characters per example.
+- **Data Format**: Only input-output pairs are supported; multi-turn conversations are not allowed.
+
+## Setup
+1. **API Key**: Obtain an API key from Google AI Studio. Store it securely (e.g., Google Cloud Secret Manager) and set it as an environment variable:
+   ```bash
+   export GOOGLE_API_KEY="YOUR_KEY_HERE"
+   ```
+
+2. **Install SDK**: Install the Python SDK:
+   ```bash
+   pip install -U google-genai
+   ```
+
+3. **Create API Client**:
+   ```python
+   from google import genai
+   client = genai.Client()  # Automatically uses the API key from the environment
+   ```
+
+## Managing Tuned Models
+- **List Existing Models**:
+   ```python
+   for model_info in client.models.list():
+       print(model_info.name)
+   ```
+
+## Creating a Tuned Model
+1. **Define Training Dataset**:
+   ```python
+   training_dataset = [
+       ["1", "2"], ["3", "4"], ["-3", "-2"],
+       ["twenty two", "twenty three"], ["two hundred", "two hundred one"],
+       ["ninety nine", "one hundred"], ["8", "9"],
+       ["-98", "-97"], ["1,000", "1,001"],
+       ["10,100,000", "10,100,001"], ["thirteen", "fourteen"],
+       ["eighty", "eighty one"], ["one", "two"],
+       ["three", "four"], ["seven", "eight"],
+   ]
+   ```
+
+2. **Create Tuning Job**:
+   ```python
+   training_dataset = types.TuningDataset(
+       examples=[types.TuningExample(text_input=i, output=o) for i, o in training_dataset]
+   )
+   tuning_job = client.tunings.tune(
+       base_model='models/gemini-1.5-flash-001-tuning',
+       training_dataset=training_dataset,
+       config=types.CreateTuningJobConfig(
+           epoch_count=5,
+           batch_size=4,
+           learning_rate=0.001,
+           tuned_model_display_name="test tuned model"
+       )
+   )
+   ```
+
+3. **Generate Content with Tuned Model**:
+   ```python
+   response = client.models.generate_content(
+       model=tuning_job.tuned_model.model,
+       contents='III'
+   )
+   print(response.text)
+   ```
+
+## Additional Notes
+- Optimal values for epoch count, batch size, and learning rate depend on your specific dataset and use case. Refer to "Advanced tuning settings and Hyperparameters" for more information.
+- Some features (e.g., progress reporting, updating descriptions, deleting models) are not yet implemented in the SDK.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. For more details, refer to Google Developers Site Policies.

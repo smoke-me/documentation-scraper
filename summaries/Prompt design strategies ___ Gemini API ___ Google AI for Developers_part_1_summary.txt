@@ -1,0 +1,45 @@
+# Gemini API Prompt Design Strategies
+
+## Overview
+This document outlines effective strategies for designing prompts when using the Gemini API for large language models (LLMs). Clear and specific instructions enhance model behavior and output quality.
+
+## Key Concepts
+
+### Prompt Structure
+- **Instructions**: Provide clear, detailed tasks for the model. Instructions can range from simple lists to complex user experience mappings.
+- **Constraints**: Specify any limitations on the response, such as length or format (e.g., tables, bullet points).
+- **Examples**: Use few-shot examples to guide the model's responses. This helps establish patterns for the model to follow.
+
+### Response Formatting
+- Specify desired output formats (e.g., JSON, bullet points).
+- Use prefixes to indicate input and output types (e.g., "Text:", "The answer is:").
+
+### Iterative Design
+- Prompt design is an iterative process. Experiment with wording, structure, and examples to refine results.
+- Adjust parameters like temperature, top-K, and top-P to control response randomness and length.
+
+### Contextual Information
+- Include relevant context in prompts to help the model understand the task better.
+- Break down complex instructions into simpler components to enhance clarity.
+
+## Practical Examples
+
+### Summarization
+- **Prompt**: "Summarize this text in two sentences: [Text]"
+- **Response**: "Quantum computers harness the wave-particle duality of matter at the quantum level to perform computations exponentially faster than traditional computers..."
+
+### Troubleshooting Guidance
+- **Prompt**: "What should I do to fix my disconnected wifi? The light on my Google Wifi router is yellow and blinking slowly."
+- **Response**: "Check that the Ethernet cable is connected to both your router and your modem and both devices are turned on..."
+
+### Multiple Choice Questions
+- **Prompt**: "Which category does The Odyssey belong to? Options: - thriller - sci-fi - mythology - biography"
+- **Response**: "mythology"
+
+## Recommendations
+- Use few-shot examples to clarify expected output formats.
+- Experiment with the number of examples to find the optimal amount for desired results.
+- Avoid overloading prompts with too many instructions; keep them concise and focused.
+
+## Conclusion
+Effective prompt design is crucial for maximizing the capabilities of the Gemini API. By following these strategies, users can achieve more accurate and relevant model outputs. For further exploration, consider using Google AI Studio for multimodal prompting.

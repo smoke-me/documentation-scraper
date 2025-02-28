@@ -1,0 +1,53 @@
+# Fine-Tuning with the Gemini API
+
+## Overview
+Fine-tuning enhances model performance on specific tasks and aligns outputs with desired requirements, especially when few-shot prompting is insufficient. This guide provides an overview of fine-tuning the Gemini API text model.
+
+## Key Concepts
+- **Fine-Tuning**: A supervised process that improves model performance by training on a dataset of examples.
+- **Training Dataset**: Must include high-quality, diverse examples with structured inputs and expected outputs.
+- **Inference**: The tuned model utilizes newly learned parameters to perform tasks during inference.
+
+## Dataset Requirements
+- **Quality**: Ensure examples are representative of expected production inputs and outputs.
+- **Format Consistency**: Production data must match the dataset format (e.g., specific keywords or structure).
+- **Example Count**: Minimum of 20 examples; 100-500 examples recommended for optimal performance.
+
+### Example Training Data
+```python
+training_data = [
+    {"text_input": "1", "output": "2"},
+    {"text_input": "3", "output": "4"},
+    ...
+]
+```
+
+## Fine-Tuning Process
+1. **Prepare Dataset**: Structure examples with prompts and expected outputs.
+2. **Run Tuning Job**: The model learns additional parameters to improve task performance.
+3. **Output**: A new model combining original and learned parameters.
+
+## Fine-Tuning Specifications
+- **Input Size**: Max 40,000 characters per example.
+- **Output Size**: Max 5,000 characters per example.
+- **Data Submission**: Can be passed inline via API or uploaded in Google AI Studio (max file size: 4 MB).
+
+## Advanced Settings for Tuning Job
+- **Epochs**: Full training passes over the dataset.
+- **Batch Size**: Number of examples processed in one iteration.
+- **Learning Rate**: Controls the adjustment strength of model parameters.
+- **Learning Rate Multiplier**: Modifies the original learning rate.
+
+## Monitoring and Error Handling
+- Check tuning job status in Google AI Studio or via the Gemini API.
+- Authentication is required (API key recommended or OAuth credentials).
+- Errors such as 'PermissionDenied: 403' may indicate insufficient authentication scopes.
+
+## Cancellation of Tuning Jobs
+- Tuning jobs can be canceled before completion, but performance may be unpredictable if canceled early.
+- For early stopping, create a new job with a lower epoch value.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. 
+
+For more details, refer to the [Google Developers Site Policies](https://developers.google.com/site-policies).

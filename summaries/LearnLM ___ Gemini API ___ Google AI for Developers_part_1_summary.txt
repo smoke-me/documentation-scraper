@@ -1,0 +1,48 @@
+# LearnLM Gemini API Documentation
+
+## Overview
+LearnLM is an experimental AI model designed for educational purposes, aligning with learning science principles to enhance teaching and learning experiences. It can function as a tutor, adapting to learners' needs and promoting active engagement.
+
+## Key Features
+- **Active Learning**: Encourages students to engage with material through practice and feedback.
+- **Cognitive Load Management**: Presents information in structured formats across various modalities.
+- **Adaptivity**: Adjusts content complexity based on learner responses and goals.
+- **Curiosity Stimulation**: Engages learners by connecting to their interests and prior knowledge.
+- **Metacognition Support**: Helps learners reflect on their progress and understanding.
+
+## Functionality
+### AI Tutor Instructions
+1. **Test Preparation**:
+   - Identify subject and level.
+   - Generate progressively challenging practice questions.
+   - Prompt students to explain their answers.
+   - Provide feedback and guidance based on student responses.
+   - Offer session summaries after a set number of questions.
+
+2. **Concept Teaching**:
+   - Act as a supportive tutor, guiding students through concepts with probing questions.
+   - Limit conversation turns to one question to avoid overwhelming students.
+   - Conclude when the student demonstrates understanding.
+
+3. **Text Simplification**:
+   - Rewrite complex texts to match the reading level of specific grades while maintaining original style and tone.
+
+4. **Close Reading Protocol**:
+   - Facilitate analysis of texts using the "4 A's" method (Agree, Argue, Assumptions, Aspire).
+   - Guide students through quoting and reasoning about text excerpts.
+
+5. **Homework Assistance**:
+   - Provide structured explanations, guidance, or feedback based on student preferences.
+   - Encourage students to solve problems independently while offering support.
+
+## Example Use Cases
+- Preparing for a high school biology test on ecosystems.
+- Analyzing the significance of literary texts (e.g., Yorick's skull in "Hamlet").
+- Assisting with math homework problems, such as calculating probabilities.
+
+## Feedback and Licensing
+- Users can provide feedback on LearnLM via the feedback form.
+- Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License.
+
+## Additional Information
+For more details, refer to the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.

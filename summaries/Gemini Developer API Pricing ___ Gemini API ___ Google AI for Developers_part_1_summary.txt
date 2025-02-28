@@ -1,0 +1,44 @@
+# Gemini Developer API Pricing Overview
+
+## API Tiers
+- **Free Tier**: 
+  - Lower rate limits for testing.
+  - Google AI Studio usage is free in all regions.
+
+- **Paid Tier**: 
+  - Higher rate limits and additional features.
+  - Different data handling capabilities.
+
+## Model Offerings
+1. **Multi-Modal Model**: 
+   - High performance across all tasks.
+   - 1 million token context window.
+
+2. **Cost-Effective Model**: 
+   - Designed for large-scale usage.
+
+3. **Image Generation Model**: 
+   - Available only on the paid tier.
+
+4. **Fast Multi-Modal Model**: 
+   - Optimized for diverse, repetitive tasks.
+   - 1 million token context window.
+
+5. **Lower Intelligence Model**: 
+   - 1 million token context window.
+
+6. **Highest Intelligence Model (Gemini 1.5 series)**: 
+   - Breakthrough 2 million token context window.
+
+## Additional Information
+- **Dynamic Retrieval Costs**: Only requests with at least one grounding support URL from the web are charged for Grounding with Google Search.
+- **Rate Limits**: Subject to change.
+- **Licensing**: 
+  - Content under Creative Commons Attribution 4.0 License.
+  - Code samples under Apache 2.0 License.
+
+## Pricing Disclaimers
+- Prices may vary from those listed and may differ from Vertex AI pricing. For Vertex prices, refer to the Vertex AI pricing page.
+
+## Legal Notices
+- Java is a registered trademark of Oracle and/or its affiliates.

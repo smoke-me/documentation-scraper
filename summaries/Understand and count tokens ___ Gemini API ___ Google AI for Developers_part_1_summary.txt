@@ -1,0 +1,21 @@
+# Gemini API Tokenization Overview
+
+## Key Concepts
+- **Tokens**: The basic units of input and output processed by Gemini models. Tokens can be individual characters or whole words. Long words may be divided into multiple tokens.
+- **Vocabulary**: The complete set of tokens utilized by the model.
+- **Tokenization**: The process of converting text into tokens.
+
+## Token Characteristics
+- A single token is approximately equivalent to 4 characters.
+- 100 tokens roughly correspond to 60-80 English words.
+
+## Billing Information
+- When billing is enabled, the cost of using the Gemini API is influenced by the number of input and output tokens.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+- For more details, refer to the Google Developers Site Policies.
+
+## Trademark Notice
+- Java is a registered trademark of Oracle and/or its affiliates.

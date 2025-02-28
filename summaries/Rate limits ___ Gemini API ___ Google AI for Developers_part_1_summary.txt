@@ -1,0 +1,26 @@
+# Gemini API Rate Limits Documentation
+
+## Overview
+Rate limits for the Gemini API regulate the number of requests allowed within a specified timeframe to ensure fair usage, prevent abuse, and maintain system performance.
+
+## Key Concepts
+- **Rate Limits**: Applied per project, not per API key. Exceeding any limit triggers a rate limit error.
+- **Requests per Minute (RPM)**: For example, if the RPM limit is 20, making 21 requests in a minute results in an error.
+- **Total Requests per Minute (TPM)**: Some limits, like Images per Minute (IPM), apply only to specific models (e.g., Imagen 3).
+
+## Usage Tiers
+- Rate limits are linked to the project's usage tier, which can be upgraded for increased limits as API usage and spending grow.
+- Upgrade requests are subject to an automated review process, and while meeting criteria is typically sufficient, upgrades may be denied based on additional factors.
+
+## Important Notes
+- Specified rate limits are not guaranteed; actual capacity may vary.
+- Each model variation has its own associated rate limits.
+- Review the Gemini models documentation for specific rate limit details.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+- For more details, refer to the Google Developers Site Policies.
+
+## Trademark
+- Java is a registered trademark of Oracle and/or its affiliates.

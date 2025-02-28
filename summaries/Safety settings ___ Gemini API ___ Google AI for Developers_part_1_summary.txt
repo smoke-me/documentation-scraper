@@ -1,0 +1,66 @@
+# Gemini API Safety Settings Documentation
+
+## Overview
+The Gemini API allows developers to configure safety settings during the prototyping stage to manage content filtering based on specific use cases. This includes adjusting settings across four filter categories to restrict or allow certain types of content.
+
+## Key Features
+- **Adjustable Safety Filters**: Modify filters to suit your application needs (e.g., video game dialogue may allow more Dangerous content).
+- **Built-in Protections**: Core harms, such as child safety risks, are always blocked and cannot be adjusted.
+- **Content Safety Ratings**: Content is analyzed and assigned a safety rating (HIGH, MEDIUM, LOW, NEGLIGIBLE) based on the probability of being unsafe.
+
+## Safety Filter Categories
+1. **Hate Speech**
+2. **Harassment**
+3. **Civic Integrity**
+4. **Other Categories**
+
+## Default Settings
+- By default, the API blocks content with a medium or higher probability of being unsafe.
+- The Civic Integrity category has a default block threshold of "Block none" for specific models.
+
+## Adjusting Safety Settings
+- Safety settings can be adjusted per request using the `GenerateContent` API call.
+- Example settings can be configured in various programming languages (Python, Java, JavaScript, etc.).
+
+### Example Code Snippet (Python)
+```python
+from google import genai
+from google.genai import types
+import PIL.Image
+
+img = PIL.Image.open("cookies.jpg")
+client = genai.Client(api_key="GEMINI_API_KEY")
+response = client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents=['Do these look store-bought or homemade?', img],
+    config=types.GenerateContentConfig(
+        safety_settings=[
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+            ),
+        ]
+    )
+)
+print(response.text)
+```
+
+## Viewing Safety Feedback
+- The response includes safety feedback:
+  - `promptFeedback` for prompt-related issues.
+  - `Candidate.finishReason` and `Candidate.safetyRatings` for response content.
+
+## Google AI Studio
+- Safety settings can be adjusted in Google AI Studio via the Run settings panel, but cannot be turned off.
+
+## Important Considerations
+- Carefully test and determine appropriate blocking levels to minimize harm while supporting key use cases.
+- Review the API reference for detailed configuration options and safety guidance.
+
+## Additional Resources
+- [API Reference](#)
+- [Safety Guidance](#)
+- [Toxicity Classifier Example](#)
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License.

@@ -1,0 +1,4 @@
+URL: https://ai.google.dev/gemini-api/docs/text-generation
+Token Count: 170
+
+The Gemini API can generate text output when provided text, images, video, and audio as input. This guide shows you how to generate text using the generateContent and streamGenerateContent methods. To learn about working with Gemini's vision and audio capabilities, refer to the Vision and Audio guides. Now that you have explored the basics of the Gemini API, you might want to try: Vision understanding: Learn how to use Gemini's native vision understanding to process images and videos. Audio understanding: Learn how to use Gemini's native audio understanding to process audio files. Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.

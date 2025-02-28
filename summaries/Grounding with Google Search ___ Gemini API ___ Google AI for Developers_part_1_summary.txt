@@ -1,0 +1,64 @@
+# Grounding with Google Search - Gemini API
+
+## Overview
+The Grounding with Google Search feature in the Gemini API enhances the accuracy and recency of model responses by providing factual content, grounding sources (supporting links), and Google Search Suggestions. This feature is available in Gemini 2.0 and can be accessed via SDKs or the REST API.
+
+## Key Features
+- **Grounding Sources**: Provides in-line links to sources that support the model's responses.
+- **Search Suggestions**: Offers related search queries based on the grounded response.
+- **Dynamic Retrieval**: The model can decide when to use Google Search based on a configurable threshold.
+
+## Configuration Example
+To enable Google Search as a tool, use the following code snippet:
+
+```python
+from google import genai
+from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
+
+client = genai.Client()
+model_id = "gemini-2.0-flash"
+google_search_tool = Tool(google_search=GoogleSearch())
+
+response = client.models.generate_content(
+    model=model_id,
+    contents="When is the next total solar eclipse in the United States?",
+    config=GenerateContentConfig(
+        tools=[google_search_tool],
+        response_modalities=["TEXT"],
+    )
+)
+
+for each in response.candidates[0].content.parts:
+    print(each.text)
+
+# Access grounding metadata
+print(response.candidates[0].grounding_metadata.search_entry_point.rendered_content)
+```
+
+## Functionality
+- **Multi-Turn Searches**: Supports complex queries that may involve multiple tools.
+- **Language Support**: Works with all available languages for text prompts.
+- **Query Limits**: Free tier allows 1,500 queries per day; additional queries billed at $35 per 1,000.
+
+## Dynamic Retrieval Configuration
+- **Threshold**: A floating-point value between [0,1] that determines when to use grounding.
+  - Default: 0.3
+  - 0: Always grounded
+  - 1: Never grounded
+- **Prediction Score**: Indicates how much a prompt benefits from grounding (range [0,1]).
+
+### Example Prediction Scores
+- Low Score (e.g., 0.13): Model-generated answer is sufficient.
+- High Score (e.g., 0.97): Requires grounding for accuracy.
+
+## Grounding Metadata
+When a response is successfully grounded, it includes `groundingMetadata` with URIs redirecting to content publishers. These links are valid for 30 days.
+
+## Implementation Notes
+- Ensure Google Search Suggestions are displayed as part of the response.
+- For more details on implementing Google Search Suggestions, refer to the relevant documentation.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. 
+
+For further information, refer to the Google Developers Site Policies.

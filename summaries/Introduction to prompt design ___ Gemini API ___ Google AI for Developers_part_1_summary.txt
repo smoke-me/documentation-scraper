@@ -1,0 +1,38 @@
+# Gemini API: Introduction to Prompt Design
+
+## Overview
+Prompt design involves crafting natural language requests to elicit specific responses from language models. Effective prompts are crucial for obtaining accurate and high-quality outputs.
+
+## Key Concepts
+- **Prompt**: A natural language request submitted to a language model, which can include questions, instructions, contextual information, examples, and partial inputs.
+- **Response Types**: The model can generate various outputs, including text, embeddings, code, images, videos, and music.
+
+## Types of Inputs
+1. **Question Input**: A direct question for the model to answer.
+   - *Example*: "What's a good name for a flower shop that specializes in selling bouquets of dried flowers?"
+   
+2. **Task Input**: A request for the model to perform a specific task.
+   - *Example*: "Give me a simple list of just the things that I must bring on a camping trip."
+
+3. **Entity Input**: Input that the model classifies or summarizes.
+   - *Example*: "Classify the following items as [large, small]: Elephant, Mouse, Snail."
+
+4. **Completion Input**: Text that the model is expected to complete or continue.
+   - *Example*: "Some simple strategies for overcoming writer's block include..."
+
+## Additional Elements
+- **Instructions**: Specify how the model should behave or the context for generating responses.
+- **Contextual Information**: Provide necessary background or restrictions within the prompt.
+- **Examples**: Input-output pairs that guide the model toward the desired response format.
+
+## Best Practices
+- Use clear and concise language in prompts.
+- Include relevant contextual information to guide the model.
+- Provide examples to illustrate the expected output format.
+
+## Next Steps
+- Experiment with writing prompts using Google AI Studio.
+- Explore advanced topics such as prompt strategies and multimodal prompting.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples are under the Apache 2.0 License. For more details, refer to Google Developers Site Policies.
