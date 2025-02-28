@@ -1,0 +1,1463 @@
+# Combined Documentation Summary
+
+## About Generative Models Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Documentation
+
+## Overview
+The Gemini API provides access to generative AI models capable of creating content from various data inputs, including text, images, and audio. These models function similarly to advanced autocomplete systems, predicting likely outputs based on input patterns.
+
+## Key Features
+- **Content Generation**: Create poetry, stories, and summaries from text prompts.
+- **No ML Expertise Required**: Users can prototype applications by simply describing desired outcomes.
+- **Generative Models**: Unlike traditional large language models (LLMs), Gemini models can process multiple data types.
+
+## Prompt Design
+- **Basic Prompts**: Direct instructions (e.g., "Write me a poem about puppies").
+- **Few-shot Prompts**: Provide examples to establish patterns for the model to replicate (e.g., country-capital pairs).
+- **Zero-shot Prompts**: Allow the model to generate responses without examples, relying on its existing knowledge.
+
+## Prompt Types
+1. **Zero-shot**: No examples provided; relies on model knowledge.
+2. **Few-shot**: Includes examples to guide the model's output.
+3. **Instruction-based**: Clearly states the task for the model.
+
+## Model Parameters
+- **Max Output Tokens**: Limits the number of tokens generated (approx. 4 characters per token).
+- **Temperature**: Controls randomness in responses (0 = deterministic, higher values = more creativity).
+- **topK**: Determines how many of the most probable tokens are considered for selection.
+- **topP**: Selects tokens based on cumulative probability.
+- **stop_sequences**: Defines sequences that signal the model to stop generating content.
+
+## Response Generation
+Responses are generated in two stages:
+1. **Probability Distribution**: The model predicts the likelihood of possible next tokens based on the input.
+2. **Decoding Strategy**: Converts probabilities into text using deterministic or stochastic methods.
+
+## Experimentation
+Users are encouraged to experiment with different prompt structures and parameters to optimize model responses.
+
+## Best Practices
+Refer to the Prompt guidelines for effective prompt creation strategies.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License, and code samples under the Apache 2.0 License. 
+
+## Additional Information
+For further details, refer to Google Developers Site Policies.
+
+## Authentication With Oauth Quickstart Gemini Api Google Ai For Developers Part 1
+
+# OAuth Authentication Quickstart for Gemini API
+
+## Overview
+This guide provides instructions for authenticating with the Gemini API using OAuth. It is suitable for testing environments. For production, refer to comprehensive authentication and authorization documentation.
+
+## Prerequisites
+1. **Google Cloud Project**: Set up a Google Cloud project and enable the Google Generative Language API.
+2. **OAuth Consent Screen**: Configure the OAuth consent screen and add yourself as a test user.
+
+## Steps to Configure OAuth
+
+### 1. Enable the API
+- Go to the Google Cloud Console.
+- Navigate to **Menu > APIs & Services > Library**.
+- Enable the **Google Generative Language API**.
+
+### 2. Configure OAuth Consent Screen
+- Navigate to **Menu > APIs & Services > OAuth consent screen**.
+- Select **External** as the user type and click **Create**.
+- Fill out the app registration form (most fields can be left blank) and click **Save and Continue**.
+- Skip adding scopes for now and click **Save and Continue**.
+- Under **Test users**, add your email and any other authorized users, then click **Save and Continue**.
+- Review the summary and click **Back to Dashboard**.
+
+### 3. Create OAuth 2.0 Client IDs
+- Navigate to **Menu > APIs & Services > Credentials**.
+- Click **Create Credentials** and select **OAuth client ID**.
+- Enter a name for the credential and click **Create**.
+- Download the JSON file (named `client_secret_<identifier>.json`), rename it to `client_secret.json`, and move it to your working directory.
+
+### 4. Set Up Application Default Credentials (ADC)
+Run the following command to set up ADC using the downloaded `client_secret.json`:
+```bash
+gcloud auth application-default login --client-id-file=client_secret.json --scopes='https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/generative-language.retriever'
+```
+Choose "continue" when prompted about app verification.
+
+### 5. Test API Access
+To verify the setup, use the following `curl` command:
+```bash
+access_token=$(gcloud auth application-default print-access-token)
+project_id=<MY PROJECT ID>
+curl -X GET https://generativelanguage.googleapis.com/v1/models \
+-H 'Content-Type: application/json' \
+-H "Authorization: Bearer ${access_token}" \
+-H "x-goog-user-project: ${project_id}" | grep '"name"'
+```
+
+### 6. Using Python Client Libraries
+Install the required libraries:
+```bash
+pip install --upgrade -q google-api-python-client google-auth-httplib2 google-auth-oauthlib
+pip install google-generativeai
+```
+
+Create a `load_creds.py` file to manage token caching:
+```python
+import os.path
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+
+SCOPES = ['https://www.googleapis.com/auth/generative-language.retriever']
+
+def load_creds():
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('client_secret.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    return creds
+```
+
+Use the credentials in your application:
+```python
+import google.generativeai as genai
+from load_creds import load_creds
+
+creds = load_creds()
+genai.configure(credentials=creds)
+print('Available base models:', [m.name for m in genai.list_models()])
+```
+
+The first execution will prompt for authorization; subsequent runs will use cached credentials.
+
+## Conclusion
+Follow these steps to authenticate with the Gemini API using OAuth. Ensure to manage your credentials securely and refer to the official documentation for production-level implementations.
+
+## Available Regions For Google Ai Studio And Gemini Api Google Ai For Developers Part 1
+
+# Google AI Studio and Gemini API Availability
+
+## Overview
+Google AI Studio and the Gemini API are subject to regional availability and age restrictions (18+). Users may encounter access issues if they are outside the supported regions or do not meet the age requirement.
+
+## Supported Regions
+The Gemini API and Google AI Studio are available in specific countries and territories. Users located outside these regions can utilize the Gemini API via Vertex AI.
+
+## Licensing
+- Content: Creative Commons Attribution 4.0 License
+- Code Samples: Apache 2.0 License
+
+For further details, refer to the Google Developers Site Policies.
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates.
+
+## Billing Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Billing Overview
+
+## Billing Options
+- **Free Tier**: No charge, with specific rate limits.
+- **Pay-as-you-go Tier**: Charges apply, with higher rate limits.
+
+## Enabling Billing
+1. **Enable Cloud Billing**: Required for transitioning from Free to Paid tier.
+   - Go to Google AI Studio: Settings > Plan Information.
+   - Click "Set up Billing" for your project.
+2. **Upgrade Process**: 
+   - Select the project and click "Upgrade."
+   - Eligibility is verified automatically.
+
+## Benefits of Paid Tier
+- Higher rate limits.
+- Prompts and responses are not used for product improvement.
+
+## Monitoring Usage
+- Use Google Cloud Console to track API usage.
+- API service name: `generativelanguage.googleapis.com`.
+
+## FAQs
+- **Free Usage in EEA, UK, CH**: Available for both tiers.
+- **Google AI Studio Charges**: Remains free regardless of billing setup.
+- **Token Calculation**: Use `GenerativeModel.count_tokens` method.
+- **Google Cloud Credits**: Usable for Gemini API.
+- **Error Handling**: No charge for failed requests (400/500 errors), but they count against quota.
+- **Model Tuning**: Free; inference on tuned models charged at base rates.
+- **Data Handling**: Refer to "How Google Uses Your Data" in terms of service.
+
+## Support
+- For billing assistance, visit Get Cloud Billing support.
+
+## Licensing
+- Content licensed under Creative Commons Attribution 4.0 License.
+- Code samples licensed under Apache 2.0 License.
+
+For further details, refer to the Google Cloud documentation and the Gemini models page.
+
+## Context Caching Gemini Api Google Ai For Developers Part 1
+
+# Context Caching - Gemini API
+
+## Overview
+The context caching feature of the Gemini API allows users to cache input tokens, reducing costs and improving efficiency in AI workflows. Once tokens are cached, they can be reused in subsequent requests without needing to resend the same input.
+
+## Key Features
+- **Caching Duration (TTL)**: Users can set a Time to Live (TTL) for cached tokens, defaulting to 1 hour if not specified. There are no minimum or maximum bounds on TTL.
+- **Cost Efficiency**: Caching is more cost-effective for high volumes of repeated input. Charges are based on:
+  - **Cache Token Count**: Number of input tokens cached, billed at a reduced rate for subsequent prompts.
+  - **Storage Duration**: Cost based on how long tokens are stored (TTL).
+  - **Other Charges**: Applies to non-cached input and output tokens.
+
+## Supported Models
+- Gemini 1.5 Pro
+- Gemini 1.5 Flash
+
+## Use Cases
+Ideal for scenarios where a substantial initial context is referenced frequently by shorter requests.
+
+## Considerations
+- **Token Limits**: Minimum input token count for caching is 32,768; maximum is model-specific.
+- **Token Handling**: Cached tokens are treated as a prefix to the prompt, with no distinction from regular tokens.
+- **Rate Limits**: Standard rate limits for GenerateContent apply; cached tokens count towards total token limits.
+- **Usage Metadata**: The number of cached tokens can be retrieved from the cache service operations and during GenerateContent requests.
+
+## Prerequisites
+- Installation of a Gemini SDK or curl.
+- Configuration of an API key as per the quickstart guide.
+
+## Additional Resources
+- For pricing details, refer to the [Gemini API pricing page](#).
+- For token counting guidance, see the [Token guide](#).
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. For more details, refer to the Google Developers Site Policies.
+
+## Embeddings In The Gemini Api Google Ai For Developers Part 1
+
+# Gemini API: Text Embeddings Documentation
+
+## Overview
+The **text-embedding-004** model in the Gemini API generates high-quality embeddings for words, phrases, and sentences, enabling various AI applications such as semantic search, text classification, and clustering.
+
+## Key Concepts
+- **Embeddings**: Capture semantic meaning and context, allowing similar texts to have closer embeddings in vector space.
+- **Use Cases**:
+  - **Information Retrieval**: Retrieve semantically similar text based on input.
+  - **Clustering**: Identify trends by comparing groups of embeddings.
+  - **Vector Database**: Store embeddings for production use cases.
+  - **Classification**: Train models to categorize documents using embeddings.
+
+## API Usage
+### Python Example
+```python
+from google import genai
+from google.genai import types
+
+client = genai.Client(api_key="GEMINI_API_KEY")
+result = client.models.embed_content(model="text-embedding-004", contents="What is the meaning of life?")
+print(result.embeddings)
+```
+
+### JavaScript Example
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+
+async function run() {
+    const result = await model.embedContent("What is the meaning of life?");
+    console.log(result.embedding.values);
+}
+run();
+```
+
+### cURL Example
+```bash
+curl "https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=$GEMINI_API_KEY" \
+-H 'Content-Type: application/json' \
+-d '{"model": "models/text-embedding-004", "content": { "parts":[{ "text": "What is the meaning of life?"}]} }'
+```
+
+### Go Example
+```go
+ctx := context.Background()
+client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GEMINI_API_KEY")))
+if err != nil { log.Fatal(err) }
+defer client.Close()
+
+em := client.EmbeddingModel("text-embedding-004")
+res, err := em.EmbedContent(ctx, genai.Text("What is the meaning of life?"))
+if err != nil { panic(err) }
+fmt.Println(res.Embedding.Values)
+```
+
+## Model Options
+- **Text Embeddings**: An updated version offering elastic embedding sizes under 768 dimensions, suitable for new projects with minor performance trade-offs.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples are under the Apache 2.0 License. 
+
+For further details, refer to the [Google Developers Site Policies](https://developers.google.com/site-policies).
+
+## Experimental Models Gemini Api Google Ai For Developers Part 1
+
+# Gemini API - Experimental Models Documentation
+
+## Overview
+The Gemini API provides experimental models in Preview mode, intended for feedback and rapid innovation. These models are not suitable for production use and may be replaced without notice. There is no guarantee that experimental models will become stable versions.
+
+## Accessing Experimental Models
+- **Availability**: All users can access experimental models.
+- **Usage**: 
+  - Directly via the Gemini API:
+    ```python
+    response = client.models.generate_content(model="gemini-2.0-flash-exp", contents="How does RLHF work?")
+    ```
+  - In Google AI Studio: Select the model from the Model drop-down menu labeled "Preview".
+
+## Features of Gemini 2.0 Flash Experimental
+- **Multimodal Generation**:
+  - **Text to Speech**: Generate human-like audio output.
+  - **Text with Inline Images**: Create multimodal outputs (e.g., blog posts with text and images).
+
+### Image Generation Capabilities (Private Experimental Release)
+1. **Text to Image**: 
+   - Example: "Generate an image of the Eiffel Tower with fireworks."
+2. **Text and Image Interleaved**: 
+   - Example: "Generate an illustrated recipe for a paella."
+3. **Image Editing**: 
+   - Example: "Edit this image to make it look like a cartoon."
+4. **Multi-turn Image Editing**: 
+   - Example: "Turn this car into a convertible. Now change the color to yellow."
+
+### Watermarking
+- All generated images include a SynthID watermark.
+- Generation and editing of images of people are prohibited.
+
+## Best Practices
+- Recommended languages for optimal performance: EN, es-MX, ja-JP, zh-CN, hi-IN.
+- Image generation does not support audio or video inputs.
+- If the model outputs text only, explicitly request images (e.g., "generate an image").
+- If generation stops midway, retry or adjust your prompt.
+
+## Feedback and Updates
+- Users can provide feedback via the developer forum.
+- Experimental models will be replaced as new versions or stable releases are available.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Note
+Java is a registered trademark of Oracle and/or its affiliates.
+
+## Explore Audio Capabilities With The Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Audio Capabilities Documentation
+
+## Overview
+The Gemini API enables interaction with audio content, allowing users to describe, summarize, and answer questions about audio files. 
+
+## Key Features
+- **Audio Processing**: Gemini can transcribe audio and provide answers based on specific segments.
+- **Supported Formats**: Accepts various audio MIME types.
+- **Token Representation**: Each second of audio is represented as 32 tokens (e.g., 1 minute = 1,920 tokens).
+- **Language Support**: Primarily supports English-language speech but can recognize non-speech sounds (e.g., birdsong, sirens).
+- **Audio Length Limit**: Maximum audio length per prompt is 9.5 hours; total combined length of multiple files cannot exceed this limit.
+- **Audio Downsampling**: Audio is downsampled to 16 Kbps and multi-channel audio is combined into a single channel.
+
+## Usage
+- **File Uploads**: Use the File API to upload audio files.
+- **Multimodal Prompting**: The API supports text, image, audio, and video data for prompting.
+- **System Instructions**: Customize model behavior for specific use cases.
+
+## Safety Considerations
+- Generative AI may produce unexpected outputs. Implement post-processing and human evaluation to mitigate risks.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Additional Resources
+- For more information, refer to the Google Developers Site Policies.
+
+**Note**: Java is a registered trademark of Oracle and/or its affiliates.
+
+## Explore Document Processing Capabilities With The Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Documentation
+
+## Overview
+The Gemini API enables advanced document processing capabilities, specifically for PDF files, including those up to 3600 pages. It utilizes native vision support to analyze both text and image content within documents.
+
+## Key Features
+- **PDF Processing**: Supports long PDF documents with integrated vision capabilities.
+- **Content Analysis**: 
+  - Analyzes diagrams, charts, and tables.
+  - Extracts information into structured formats.
+  - Answers questions related to visual and text content.
+- **Content Transcription**: Transcribes document content (e.g., to HTML) while preserving layout and formatting for downstream applications (e.g., RAG pipelines).
+
+## Usage
+This guide provides instructions on using the `generateContent` function to produce text outputs from processed documents.
+
+## Additional Resources
+- **File Prompting Strategies**: Supports multimodal prompting with text, images, audio, and video.
+- **System Instructions**: Customize model behavior for specific use cases.
+- **Safety Guidance**: Emphasizes the importance of post-processing and human evaluation to mitigate risks of inaccurate or biased outputs.
+
+## Licensing
+- Content: Creative Commons Attribution 4.0 License.
+- Code Samples: Apache 2.0 License.
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates.
+
+## Explore Vision Capabilities With The Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Vision Capabilities Overview
+
+## Introduction
+The Gemini API from Google AI enables developers to leverage advanced vision capabilities for processing images and videos. This functionality supports a range of use cases that traditionally required specialized models.
+
+## Key Features
+- **PDF Processing**: Transcribe and reason over PDFs containing up to 2 million tokens.
+- **Video Analysis**: Describe, segment, and extract information from videos up to 90 minutes long.
+- **Object Detection**: Identify objects in images and retrieve their bounding box coordinates.
+
+## Multimodal Functionality
+Gemini is designed for multimodal interactions, allowing the integration of various data types:
+- **Supported Data Types**: Text, image, audio, and video inputs.
+
+## Usage Guidelines
+- **File Upload**: Use the File API to upload image and video files.
+- **Text Generation**: Generate text outputs based on image and video inputs.
+
+## Additional Resources
+- **File Prompting Strategies**: Guidance on effective multimodal prompting.
+- **System Instructions**: Customize model behavior for specific applications.
+- **Safety Guidance**: Recommendations for mitigating risks associated with generative AI outputs, including post-processing and human evaluation.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates. 
+
+For further details, refer to the Google Developers Site Policies.
+
+## File Prompting Strategies Gemini Api Google Ai For Developers Part 1
+
+# Gemini API File Prompting Strategies
+
+## Overview
+The Gemini API supports multimodal capabilities, allowing users to input various data types, including text, images, and audio. This flexibility enhances the range of tasks that can be performed using the API.
+
+## Key Features
+- **Multimodal Input**: Supports text, images, and audio for diverse applications.
+- **Prompt Design**: Effective prompts can significantly improve output quality.
+
+## Best Practices for Prompt Design
+1. **Be Specific**: Provide clear and concise instructions to minimize misinterpretation.
+2. **Use Examples**: Incorporate few-shot examples to illustrate desired outcomes.
+3. **Break Down Tasks**: Divide complex tasks into smaller, manageable steps.
+4. **Specify Output Format**: Indicate the desired output format (e.g., markdown, JSON).
+5. **Image Placement**: For single-image prompts, place the image before the text for better performance.
+
+## Troubleshooting Tips
+- **Relevance of Image Information**: If the model fails to utilize relevant image details, provide hints about which aspects to focus on.
+- **Generic Outputs**: If outputs are too generic, ask the model to describe the image before performing the task.
+- **Clarify Reasoning**: If outputs are unexpected, ask the model to explain its reasoning to identify where it may have misunderstood.
+
+## Sampling Parameters
+When sending requests, adjust the following parameters to optimize model output:
+- **Temperature**: Controls randomness in responses. Start with 0.4 for balanced results; increase for creativity or decrease for determinism.
+- **Top-K**: Defines the number of probable tokens to consider. A lower value yields less randomness; the default is 32.
+- **Top-P**: Determines the cumulative probability threshold for token selection. A lower value results in less randomness; the default is 1.0.
+
+## Next Steps
+- Experiment with multimodal prompts using Google AI Studio.
+- Refer to the Prompt Strategies page for additional guidance on effective prompt design.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. Java is a registered trademark of Oracle and/or its affiliates.
+
+## Fine Tuning Tutorial Gemini Api Google Ai For Developers Part 1
+
+# Fine-tuning Tutorial: Gemini API
+
+## Overview
+This tutorial provides guidance on fine-tuning the Gemini API text model using the Python SDK or REST API (via curl). It focuses on tuning the text generation service.
+
+## Limitations
+- **Input Size:** Maximum of 40,000 characters per example.
+- **Output Size:** Maximum of 5,000 characters per example.
+- **Supported Examples:** Only input-output pairs; multi-turn conversations are not supported.
+
+## Prerequisites
+1. **API Key:** Obtain an API key from Google AI Studio. Store it as an environment variable for security.
+2. **Project Setup:** Ensure your project is configured to use the Gemini API.
+
+## Checking Tuned Models
+To list existing tuned models:
+```bash
+curl -X GET https://generativelanguage.googleapis.com/v1beta/tunedModels?page_size=5 \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer ${access_token}" \
+-H "x-goog-user-project: ${project_id}" > tuned_models.json
+
+jq .tunedModels[].name < tuned_models.json
+```
+To paginate through results, use the `nextPageToken`.
+
+## Creating a Tuned Model
+To create a tuned model, send your dataset using the `tunedModels.create` method:
+```bash
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/tunedModels?key=$GOOGLE_API_KEY" \
+-H 'Content-Type: application/json' \
+-d '{
+  "display_name": "number generator model",
+  "base_model": "models/gemini-1.5-flash-001-tuning",
+  "tuning_task": {
+    "hyperparameters": {
+      "batch_size": 2,
+      "learning_rate": 0.001,
+      "epoch_count": 5
+    },
+    "training_data": {
+      "examples": {
+        "examples": [
+          {"text_input": "1", "output": "2"},
+          ...
+        ]
+      }
+    }
+  }
+}' | tee tunemodel.json
+```
+
+## Monitoring Training Status
+Check the status of the tuning operation:
+```bash
+operation=$(cat tunemodel.json | jq ".name" | tr -d '"')
+tuning_done=false
+while [[ "$tuning_done" != "true" ]]; do
+  sleep 5
+  curl -X GET "https://generativelanguage.googleapis.com/v1/${operation}?key=$GOOGLE_API_KEY" \
+  -H 'Content-Type: application/json' > tuning_operation.json
+  complete=$(jq .metadata.completedPercent < tuning_operation.json)
+  echo "Tuning: ${complete}%"
+  tuning_done=$(jq .done < tuning_operation.json)
+done
+```
+
+## Using the Tuned Model
+Once the model state is active, you can generate content:
+```bash
+curl -X POST https://generativelanguage.googleapis.com/v1beta/$modelname:generateContent?key=$GOOGLE_API_KEY \
+-H 'Content-Type: application/json' \
+-d '{ "contents": [{ "parts": [{ "text": "LXIII" }] }] }'
+```
+
+## Deleting a Tuned Model
+To delete a model:
+```bash
+curl -X DELETE https://generativelanguage.googleapis.com/v1beta/${modelname}?key=$GOOGLE_API_KEY \
+-H 'Content-Type: application/json'
+```
+
+## Additional Notes
+- Optimal hyperparameters depend on your dataset.
+- For more advanced settings, refer to the sections on Advanced tuning settings and Hyperparameters.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License, and code samples under the Apache 2.0 License.
+
+## Fine Tuning With The Gemini Api Google Ai For Developers Part 1
+
+# Fine-tuning with the Gemini API
+
+## Overview
+Fine-tuning enhances model performance for specific tasks using a training dataset of example inputs and expected outputs. This process is particularly useful when prompt design strategies, such as few-shot prompting, do not yield satisfactory results.
+
+## Key Concepts
+- **Fine-tuning**: A supervised process that adjusts model parameters based on a training dataset to improve task-specific performance.
+- **Training Dataset**: Should contain high-quality, diverse examples that reflect expected production inputs and outputs.
+- **Inference**: The tuned model uses learned parameters during inference to generate outputs based on new inputs.
+
+## Dataset Requirements
+- Structure: Each example must include prompt inputs and expected outputs.
+- Consistency: Production data must match the format and context of the training examples.
+- Size: Minimum of 20 examples; 100-500 examples recommended for optimal performance.
+
+### Example Training Data
+```python
+training_data = [
+    {"text_input": "1", "output": "2"},
+    {"text_input": "3", "output": "4"},
+    ...
+]
+```
+
+## Fine-tuning Process
+1. **Prepare Dataset**: Ensure examples are formatted correctly and representative of expected usage.
+2. **Run Tuning Job**: The model learns additional parameters to perform the desired task.
+3. **Output**: A new model combining original and learned parameters.
+
+## Fine-tuning Limitations
+- Maximum input size: 40,000 characters.
+- Maximum output size: 5,000 characters.
+- Data can be passed inline or through files (max file size: 4 MB).
+
+## Advanced Settings
+- **Epochs**: Number of training passes over the dataset.
+- **Batch Size**: Number of examples processed in one iteration.
+- **Learning Rate**: Controls the adjustment strength of model parameters.
+- **Learning Rate Multiplier**: Modifies the original learning rate.
+
+### Recommendations
+- Adjust epochs based on the loss curve; stop training before it plateaus.
+- Monitor tuning job status in Google AI Studio.
+
+## Authentication
+- Required for API and client library access.
+- Recommended to use an API key; OAuth credentials can also be configured.
+
+## Error Handling
+- Common error: 'PermissionDenied: 403 Request had insufficient authentication scopes'. Resolve by ensuring proper authentication setup.
+
+## Cancellation
+- Tuning jobs can be canceled anytime before completion, but performance may be unpredictable if canceled early.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License.
+
+## Gemini 2.0 Flash Thinking Gemini Api Google Ai For Developers Part 1
+
+# Gemini 2.0 Flash Thinking Model Documentation
+
+## Overview
+The Gemini 2.0 Flash Thinking model is an experimental AI model designed to generate and articulate its reasoning process, enhancing response quality through improved reasoning capabilities.
+
+## Key Features
+- **Model Type**: Experimental, available in Google AI Studio and via the Gemini API.
+- **Reasoning**: Capable of stronger reasoning than the standard Gemini 2.0 Flash Experimental model.
+- **API Version**: Utilizes the v1alpha version of the Gemini API.
+
+## API Usage
+
+### Initialization
+To use the Gemini API, initialize the client with your API key:
+```python
+from google import genai
+
+client = genai.Client(api_key='GEMINI_API_KEY', http_options={'api_version':'v1alpha'})
+```
+
+### Generating Content
+To generate content using the Flash Thinking model:
+```python
+response = client.models.generate_content(
+    model='gemini-2.0-flash-thinking-exp',
+    contents='Explain how RLHF works in simple terms.'
+)
+print(response.text)
+```
+
+### Multi-Turn Conversations
+For multi-turn conversations, maintain the conversation history:
+```python
+chat = client.aio.chats.create(model='gemini-2.0-flash-thinking-exp')
+
+response = await chat.send_message('What is your name?')
+print(response.text)
+
+response = await chat.send_message('What did you just say before this?')
+print(response.text)
+```
+
+## Limitations
+- The Flash Thinking model is experimental and may have limitations in performance and reliability.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Trademark
+- Java is a registered trademark of Oracle and/or its affiliates.
+
+## Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Documentation
+
+## Overview
+The Gemini API provides access to Google's generative AI capabilities, allowing developers to generate content using the Gemini models.
+
+## Getting Started
+1. **Obtain API Key**: Sign up for a Gemini API key.
+2. **Make Your First API Request**: Use the following code snippets to generate content.
+
+### Python Example
+```python
+from google import genai
+
+client = genai.Client(api_key="YOUR_API_KEY")
+response = client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents="Explain how AI works",
+)
+print(response.text)
+```
+
+### JavaScript Example
+```javascript
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+const genAI = new GoogleGenerativeAI("YOUR_API_KEY");
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+const prompt = "Explain how AI works";
+const result = await model.generateContent(prompt);
+console.log(result.response.text());
+```
+
+### cURL Example
+```bash
+curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=YOUR_API_KEY" \
+-H 'Content-Type: application/json' \
+-X POST \
+-d '{ "contents": [{ "parts":[{"text": "Explain how AI works"}] }] }'
+```
+
+## Key Features
+- **Multimodal Capabilities**: Process and understand unstructured data from images, videos, and documents.
+- **Customization**: Modify model behavior for specific tasks and tune with your own data.
+- **JSON Response**: Configure models to respond with structured JSON data for automated processing.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Additional Information
+For more details, refer to the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
+
+## Gemini Api Quickstart Google Ai For Developers Part 1
+
+# Gemini API Quickstart
+
+## Overview
+This quickstart guide provides instructions for installing your SDK and making your first request to the Gemini API using the `generateContent` method.
+
+## Steps to Get Started
+1. **Install SDK**: Choose and install your preferred SDK for accessing the Gemini API.
+2. **Make Your First Request**: Utilize the `generateContent` method to send a request to the Gemini API.
+
+## Additional Resources
+Explore further guides to see Gemini in action.
+
+## Licensing
+- Content: Creative Commons Attribution 4.0 License
+- Code Samples: Apache 2.0 License
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates.
+
+## Gemini Developer Api Pricing Gemini Api Google Ai For Developers Part 1
+
+# Gemini Developer API Pricing Overview
+
+## API Tiers
+- **Free Tier**: 
+  - Lower rate limits for testing.
+  - Google AI Studio usage is free in all regions.
+
+- **Paid Tier**: 
+  - Higher rate limits and additional features.
+  - Different data handling capabilities.
+
+## Model Specifications
+1. **Multi-Modal Model**: 
+   - High performance across tasks.
+   - 1 million token context window.
+   - Designed for agent-based applications.
+
+2. **Cost-Effective Model**: 
+   - Smallest model suitable for large-scale usage.
+
+3. **Image Generation Model**: 
+   - State-of-the-art capabilities available in the paid tier.
+
+4. **Fast Multi-Modal Model**: 
+   - Optimized for repetitive tasks.
+   - 1 million token context window.
+
+5. **Lower Intelligence Model**: 
+   - Smallest model for basic use cases.
+   - 1 million token context window.
+
+6. **High Intelligence Model (Gemini 1.5)**: 
+   - Breakthrough capabilities with a 2 million token context window.
+
+## Pricing Notes
+- Prices may vary from those listed and should be checked on the Vertex AI pricing page.
+- Dynamic retrieval costs apply only to requests with at least one grounding support URL.
+- Gemini API costs are always applicable.
+- Rate limits are subject to change.
+
+## Licensing
+- Content licensed under Creative Commons Attribution 4.0 License.
+- Code samples licensed under Apache 2.0 License.
+- For more details, refer to Google Developers Site Policies.
+
+## Trademark
+- Java is a registered trademark of Oracle and/or its affiliates.
+
+## Gemini Models Gemini Api Google Ai For Developers Part 1
+
+# Gemini Models Overview
+
+## Introduction
+Gemini models are advanced multimodal AI models developed by Google, capable of processing audio, images, video, and text to generate text responses. They are designed for low latency and enhanced performance, suitable for a variety of applications.
+
+## Key Features
+- **Multimodal Input**: Supports audio, images, video, and text.
+- **Text Responses**: Generates text-based outputs based on inputs.
+- **High Performance**: Optimized for speed and efficiency.
+- **Large Context Window**: Supports a 1 million token context window.
+
+## Model Variants
+1. **Gemini 2.0 Flash**: 
+   - Next-gen features and improved capabilities.
+   - Optimized for cost efficiency and low latency.
+   - Outperforms Gemini 1.5 Flash on benchmarks.
+
+2. **Gemini 1.5 Flash**: 
+   - Versatile for diverse tasks.
+   - Includes a smaller variant (1.5 Flash-8B) for lower intelligence tasks.
+   - Mid-size variant (1.5 Pro) optimized for reasoning tasks, capable of processing large datasets.
+
+3. **Text Embedding Model**: 
+   - Generates text embeddings with 768 dimensions for input text up to 2,048 tokens.
+   - Achieves superior retrieval performance on MTEB benchmarks.
+
+4. **Attributed Question-Answering (AQA) Model**: 
+   - Performs AQA tasks over documents and returns grounded answers with probability estimates.
+
+## Usage Guidelines
+- **Model Naming Conventions**:
+  - **Latest**: Use `<model>-<generation>-<variation>-latest` for the cutting-edge version (e.g., `gemini-1.0-pro-latest`).
+  - **Latest Stable**: Use `<model>-<generation>-<variation>` for the most recent stable version (e.g., `gemini-1.0-pro`).
+  - **Stable**: Use `<model>-<generation>-<variation>-<version>` for specific stable models (e.g., `gemini-1.0-pro-001`).
+  - **Experimental**: Use `<model>-<generation>-<variation>-<version>` for experimental models (e.g., `gemini-exp-1121`).
+
+## Rate Limits
+Refer to the rate limits page for specific limits associated with each model variant.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Supported Languages
+Gemini models are designed to work with multiple languages, enhancing their versatility in global applications. 
+
+For further details and examples, please refer to the official documentation.
+
+## Generate Structured Output With The Gemini Api Google Ai For Developers Part 1
+
+# Gemini API: Generating Structured Output
+
+## Overview
+The Gemini API allows for the generation of structured text output in JSON format, suitable for automated processing. This feature is beneficial for applications that require structured data, such as building databases or extracting information from various sources.
+
+## Key Features
+- **JSON Output**: Request Gemini to respond with JSON-formatted output.
+- **Response Schema**: Use the `responseSchema` field to specify a JSON schema for more deterministic responses.
+- **Multimodal Support**: Gemini can produce JSON responses for multimodal requests (images, videos, audio).
+  
+## JSON Schema
+To define the structure of the JSON data, use a Schema object, which is a subset of the OpenAPI 3.0 Schema object. Key fields include:
+- `type`: Specifies the data type (e.g., STRING, INTEGER).
+- `properties`: Defines the structure of objects.
+- `required`: Lists required properties.
+- `propertyOrdering`: Specifies the order of properties in the response.
+
+### Example Schema
+```json
+{
+  "type": "OBJECT",
+  "properties": {
+    "name": { "type": "STRING" },
+    "age": { "type": "INTEGER" }
+  },
+  "required": ["name"],
+  "propertyOrdering": ["name", "age"]
+}
+```
+
+## Important Notes
+- The API orders properties alphabetically by default. To maintain a specific order, use the `propertyOrdering` field.
+- Ensure that examples provided to the model match the property order defined in the schema to improve output quality.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+For complete documentation on Schema fields and usage, refer to the Schema reference in the Gemini API documentation.
+
+## Google Gen Ai Sdk Gemini Api Google Ai For Developers Part 1
+
+# Google Gen AI SDK Documentation
+
+## Overview
+The Google Gen AI SDK provides a unified interface to the Gemini 2.0 API through both the Gemini Developer API and Vertex AI (Gemini Enterprise API). It supports both Gemini 2.0 and Gemini 1.5 models.
+
+## SDK Availability
+- **Python**: Available on [PyPI](https://pypi.org/) and [GitHub](https://github.com/).
+- **Go**: Available on [go.dev](https://go.dev/) and [GitHub](https://github.com/).
+- **Java**: Available through [Maven](https://maven.apache.org/) and [GitHub](https://github.com/).
+
+## Example Usage
+
+### Python
+```python
+response = client.models.generate_content(model='gemini-2.0-flash', contents='How does RLHF work?')
+print(response.text)
+```
+
+### Go
+```go
+client, err := genai.NewClient(ctx, &genai.ClientConfig{
+    APIKey: apiKey,
+    Backend: genai.BackendGeminiAPI,
+})
+result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash", genai.Text("How does RLHF work?"), nil)
+```
+
+### Java
+Add the following dependency in your `pom.xml`:
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.google.genai</groupId>
+        <artifactId>google-genai</artifactId>
+        <version>0.1.0</version>
+    </dependency>
+</dependencies>
+```
+```java
+import com.google.genai.Client;
+import com.google.genai.types.GenerateContentResponse;
+
+public class GenerateContentWithTextInput {
+    public static void main(String[] args) throws IOException, HttpException {
+        Client client = new Client();
+        GenerateContentResponse response = client.models.generateContent("gemini-2.0-flash-001", "How does RLHF work?", null);
+        System.out.println("Unary response: " + response.text());
+    }
+}
+```
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates.
+
+## Grounding With Google Search Gemini Api Google Ai For Developers Part 1
+
+# Grounding with Google Search - Gemini API Documentation
+
+## Overview
+The Grounding with Google Search feature in the Gemini API enhances the accuracy and recency of model responses by providing factual information and grounding sources. It returns in-line supporting links and Google Search Suggestions alongside the response content.
+
+## Key Features
+- **Grounding Sources**: Provides links to sources that support the model's responses.
+- **Google Search Suggestions**: Offers suggested queries based on the grounded response.
+- **Dynamic Retrieval**: Allows the model to decide when to use Google Search based on a configurable threshold.
+
+## Configuration
+To enable Grounding with Google Search, configure the API as follows:
+
+```python
+from google import genai
+from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
+
+client = genai.Client()
+model_id = "gemini-2.0-flash"
+google_search_tool = Tool(google_search=GoogleSearch())
+
+response = client.models.generate_content(
+    model=model_id,
+    contents="When is the next total solar eclipse in the United States?",
+    config=GenerateContentConfig(
+        tools=[google_search_tool],
+        response_modalities=["TEXT"],
+    )
+)
+
+for each in response.candidates[0].content.parts:
+    print(each.text)
+
+# Access grounding metadata
+print(response.candidates[0].grounding_metadata.search_entry_point.rendered_content)
+```
+
+## Functionality
+- **Multi-turn Searches**: Supports complex prompts and workflows requiring planning and reasoning.
+- **Language Support**: Works with all available languages for text prompts.
+- **Query Limit**: Free tier allows 1,500 queries per day; additional queries are billed at $35 per 1,000.
+
+## Dynamic Retrieval Configuration
+- **Threshold**: A floating-point value between [0,1] (default: 0.3).
+  - **0**: Always grounds with Google Search.
+  - **1**: Never grounds with Google Search.
+  - **< threshold**: Response may not be grounded.
+
+### Prediction Score
+- A score between [0,1] indicating the necessity for grounding:
+  - Higher scores indicate a need for the most recent information.
+  - Example scores:
+    - "Write a poem about peonies": 0.13
+    - "Who won the latest F1 grand prix?": 0.97
+
+## Response Structure
+A successful grounded response includes `groundingMetadata` with URIs redirecting to content publishers. If no metadata is present, grounding was unsuccessful due to low relevance or incomplete information.
+
+### Example Response
+```json
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Carlos Alcaraz won the Gentlemen's Singles title at the 2024 Wimbledon Championships."
+          }
+        ],
+        "role": "model"
+      },
+      "groundingMetadata": {
+        "searchEntryPoint": {
+          "renderedContent": "<style>...</style>"
+        },
+        "groundingChunks": [...],
+        "groundingSupports": [...],
+        "webSearchQueries": ["who won wimbledon 2024"]
+      }
+    }
+  ]
+}
+```
+
+## Additional Resources
+- For implementation details on Google Search Suggestions, refer to the **Use Google Search Suggestions** documentation.
+- To explore the Search tool, try the **Search tool notebook**.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples under the Apache 2.0 License. For more details, see the Google Developers Site Policies.
+
+## Introduction To Prompt Design Gemini Api Google Ai For Developers Part 1
+
+# Gemini API: Introduction to Prompt Design
+
+## Overview
+Prompt design involves creating effective prompts to elicit desired responses from language models. Well-structured prompts are crucial for obtaining accurate and high-quality outputs.
+
+## Key Concepts
+- **Prompt**: A natural language request to a language model that can include questions, instructions, contextual information, examples, and partial inputs.
+- **Response Types**: The model can generate various outputs, including text, embeddings, code, images, videos, and music.
+
+## Types of Inputs
+1. **Question Input**: Asks the model a question.
+   - *Example*: "What's a good name for a flower shop that specializes in dried flowers?"
+   
+2. **Task Input**: Directs the model to perform a specific task.
+   - *Example*: "Give me a simple list of just the things that I must bring on a camping trip."
+
+3. **Entity Input**: Involves classifying or summarizing information.
+   - *Example*: "Classify the following items as [large, small]: Elephant, Mouse, Snail."
+
+4. **Completion Input**: Provides text for the model to complete.
+   - *Example*: "Some simple strategies for overcoming writer's block include..."
+
+## Additional Components
+- **Instructions**: Specify how the model should behave or what context to consider.
+- **Contextual Information**: Provides background or boundaries for the model's response.
+- **Examples**: Input-output pairs that guide the model on expected responses.
+
+## Best Practices
+- Include clear and concise instructions.
+- Use contextual information to narrow the focus of responses.
+- Provide examples to illustrate the desired format and content.
+
+## Next Steps
+- Experiment with prompt creation in Google AI Studio.
+- Explore advanced strategies in the prompt strategies topic.
+- Learn about multimodal prompting with media files.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples are under the Apache 2.0 License. For more details, refer to Google Developers Site Policies.
+
+## Learnlm Gemini Api Google Ai For Developers Part 1
+
+# LearnLM Gemini API Documentation
+
+## Overview
+LearnLM is an experimental AI model designed for educational purposes, aligning with learning science principles. It functions as a tutor for various teaching and learning scenarios.
+
+## Key Features
+- **Active Learning**: Encourages student engagement through practice and timely feedback.
+- **Cognitive Load Management**: Presents information in a structured manner across different modalities.
+- **Adaptivity**: Adjusts to individual learner goals and needs.
+- **Curiosity Stimulation**: Inspires student motivation and engagement.
+- **Metacognition Support**: Aids learners in planning, monitoring, and reflecting on their progress.
+
+## Functionality
+### AI Tutor Instructions
+1. **Test Preparation**:
+   - Ask the student about the subject and level.
+   - Generate practice questions, increasing difficulty based on student responses.
+   - Prompt explanations for answers, affirm correct responses, or guide corrections.
+   - Provide summaries of session performance after five questions.
+
+2. **Concept Teaching**:
+   - Maintain a friendly and supportive demeanor.
+   - Use guiding and probing questions to facilitate understanding.
+   - Limit to one question at a time to avoid overwhelming the student.
+
+3. **Text Simplification**:
+   - Rewrite provided text to match grade-level comprehension while preserving original style and tone.
+
+4. **Close Reading Protocol**:
+   - Facilitate analysis of texts using the "4 A's" protocol:
+     - Agree: Identify and explain a text part the student agrees with.
+     - Argue: Identify and explain a text part the student disagrees with.
+     - Assumptions: Identify and explain the author's assumptions.
+     - Aspire: Identify and explain a text part the student aspires to.
+
+5. **Homework Assistance**:
+   - Offer three options: 
+     - **Answer**: Provide a step-by-step solution.
+     - **Guidance**: Help the student solve the problem without giving the answer.
+     - **Feedback**: Review the student's solution and provide constructive feedback.
+
+## Example Use Cases
+- **Biology Test Preparation**: Assist students in studying ecosystems.
+- **Literature Analysis**: Help students analyze the significance of elements in texts like "Hamlet."
+- **Mathematics Problem Solving**: Guide students through specific homework problems, such as probability calculations.
+
+## Feedback
+Users can provide feedback on LearnLM through the designated feedback form.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License, and code samples under the Apache 2.0 License. For more details, refer to Google Developers Site Policies.
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates.
+
+## Long Context Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Documentation
+
+## Overview
+The Gemini API provides access to advanced generative models capable of processing large context windows, enabling new use cases in text, video, audio, and multimodal applications. 
+
+### Context Windows
+- **Gemini 2.0 Flash & Gemini 1.5 Flash**: 1 million tokens
+- **Gemini 1.5 Pro**: 2 million tokens
+
+### Key Concepts
+- **Context Window**: Analogous to short-term memory, it defines the amount of information (tokens) the model can process at once.
+- **In-Context Learning**: Enhanced learning capabilities allowing the model to learn from extensive instructional materials provided in context.
+
+## Getting Started
+- **Long Context Usage**: Unlike previous models limited to 8,000 to 128,000 tokens, Gemini 1.5 can handle up to 1 million tokens, and Gemini 1.5 Pro can handle 2 million tokens.
+- **Common Use Cases**:
+  - Text summarization
+  - Question answering
+  - Agentic workflows
+  - Many-shot in-context learning
+
+## Use Cases
+### Text
+- Summarizing large corpuses without sliding windows.
+- Enhanced question answering capabilities.
+- Supporting agent workflows with comprehensive context.
+
+### Video
+- Video question answering and memory.
+- Video captioning and recommendation systems.
+- Real-time video processing.
+
+### Audio
+- Real-time transcription and translation.
+- Podcast and meeting summarization.
+- Voice assistant functionalities.
+
+## Optimization Techniques
+- **Context Caching**: Reduces costs by storing user-uploaded files and allowing repeated access without incurring high token costs.
+- **Cost Efficiency**: Using context caching can lower input/output costs significantly (up to 4x less).
+
+## Limitations
+- Performance may vary with multiple queries; high accuracy is typically achieved with single queries.
+- Longer queries may introduce higher latency.
+
+## FAQs
+- **Does adding more tokens reduce performance?**: Avoid unnecessary tokens; however, relevant tokens can enhance information extraction.
+- **How does Gemini 1.5 Pro perform on needle-in-a-haystack tests?**: Achieves 100% recall up to 530k tokens and >99.7% recall up to 1M tokens.
+- **How to access the 2-million-token context window?**: Available to all developers using Gemini 1.5 Pro.
+
+## Conclusion
+Gemini models revolutionize the capabilities of generative models with extensive context windows, enabling innovative applications across various domains. For detailed implementation, refer to the respective guides on prompting and model usage.
+
+## Prompt Design Strategies Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Prompt Design Strategies
+
+## Overview
+This document outlines effective strategies for designing prompts when using the Gemini API, which leverages large language models (LLMs) for generating text-based responses. 
+
+## Key Concepts
+- **Prompting**: Providing clear and specific instructions to guide the model's behavior.
+- **Task Definition**: Clearly describe the task for the model, which can range from simple instructions to complex user experience mapping.
+- **Constraints**: Specify any limitations on the response, such as length or format.
+
+## Prompt Examples
+1. **Basic Summarization**:
+   - **Prompt**: "Summarize this text: [Text]"
+   - **Response**: A concise summary of the provided text.
+
+2. **Length Constraints**:
+   - **Prompt**: "Summarize this text in two sentences: [Text]"
+   - **Response**: A summary limited to two sentences.
+
+3. **Response Formatting**:
+   - **Prompt**: "Provide a bulleted list of key points from the following text: [Text]"
+   - **Response**: A bulleted list summarizing the text.
+
+## Instruction Types
+- **Format Instructions**: Specify how the response should be structured (e.g., table, list).
+- **Content Instructions**: Define what the model should include or avoid in the response.
+
+## Few-Shot vs. Zero-Shot Prompts
+- **Few-Shot Prompts**: Include examples to guide the model's response format and content.
+- **Zero-Shot Prompts**: Provide no examples; rely on the model's understanding of the task.
+
+## Contextual Information
+- Provide relevant context within the prompt to help the model understand the task better.
+- Use prefixes to clarify input and expected output formats.
+
+## Iterative Design
+- Prompt design is iterative; rephrase prompts to achieve desired results.
+- Experiment with the number of examples and their structure to avoid overfitting.
+
+## Parameter Control
+- Adjust model parameters (e.g., temperature, top-K, top-P) to influence response randomness and length.
+- Start with a temperature of 0.2 for balanced responses.
+
+## Troubleshooting and Fallbacks
+- If the model returns a fallback response, consider adjusting the prompt or parameters.
+- Avoid relying on models for factual information.
+
+## Conclusion
+Effective prompt design enhances the performance of the Gemini API. By following these strategies, users can create prompts that yield accurate and relevant responses. For further exploration, users are encouraged to experiment with Google AI Studio and multimodal prompting techniques. 
+
+### Licensing
+Content is licensed under Creative Commons Attribution 4.0 License; code samples under Apache 2.0 License.
+
+## Rate Limits Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Rate Limits Documentation
+
+## Overview
+Rate limits for the Gemini API regulate the number of requests that can be made within a specified timeframe to ensure fair usage, prevent abuse, and maintain system performance.
+
+## Key Concepts
+- **Rate Limits**: Applied per project, not per API key. Exceeding any limit triggers a rate limit error.
+- **Limits Types**:
+  - **Requests Per Minute (RPM)**: Total requests allowed per minute.
+  - **Tokens Per Minute (TPM)**: Specific to certain models.
+  - **Images Per Minute (IPM)**: Applicable only to image-generating models (e.g., Imagen 3).
+
+## Usage Tiers
+- Rate limits are associated with the project's usage tier.
+- Higher tiers offer increased rate limits as API usage and spending grow.
+- Upgrade requests are subject to automated checks; approval is not guaranteed.
+
+## Important Notes
+- Specified rate limits are not guaranteed; actual capacity may vary.
+- Each model variation has distinct rate limits. Refer to the "Gemini models" documentation for specifics.
+- Upgrade requests may be denied based on additional factors identified during review.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License.
+- For more details, refer to Google Developers Site Policies.
+
+## Trademark
+- Java is a registered trademark of Oracle and/or its affiliates.
+
+## Safety Guidance Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Safety Guidance
+
+## Overview
+The Gemini API provides access to generative AI and natural language processing (NLP) models. While powerful, these models have limitations and can produce unexpected outputs, including inaccuracies, biases, or offensive content. Developers must implement rigorous post-processing and manual evaluations to mitigate risks.
+
+## Key Concepts
+- **Generative AI Models**: Versatile tools for various language tasks, but can generate undesirable outputs.
+- **Safety Filters**: Built-in content filtering and adjustable safety settings across four harm dimensions.
+- **Developer Responsibility**: Users must apply models responsibly and adhere to the Generative AI Prohibited Use Policy.
+
+## Recommended Practices
+1. **Safety Testing**: Conduct iterative safety testing tailored to your application.
+2. **User Feedback**: Solicit and monitor user feedback to refine application safety.
+3. **Risk Assessment**: Identify potential harms and determine mitigation strategies based on user context.
+
+## Mitigation Strategies
+- **Model Tuning**: Adjust model outputs to align with acceptable standards.
+- **Input Methods**: Design input methods that encourage safer outputs (e.g., drop-down lists).
+- **Output Filtering**: Implement blocklists and human review processes for unsafe content.
+- **Adversarial Testing**: Proactively test the application with malicious or harmful inputs to identify weaknesses.
+
+## Safeguards Against Misuse
+- Assign unique user IDs and limit query volumes to prevent abuse.
+- Protect against prompt injection attacks, similar to SQL injection.
+
+## Functionality Adjustment
+- Opt for lower-risk tasks that require human oversight or have a narrower scope.
+
+## Testing Approaches
+- **Safety Benchmarking**: Create metrics reflecting potential safety issues and evaluate performance against these metrics.
+- **Adversarial Testing**: Use targeted test data to probe for harmful outputs.
+
+## Continuous Improvement
+- Establish channels for user feedback to identify and address emerging issues.
+- Regularly update safety measures based on user interactions and feedback.
+
+## Additional Resources
+- Refer to the safety settings guide for adjustable safety settings in the Gemini API.
+- Consult the AI Risk Management Framework by NIST for comprehensive risk management strategies.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples are under the Apache 2.0 License. For more details, see Google Developers Site Policies.
+
+## Safety Settings Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Safety Settings Documentation
+
+## Overview
+The Gemini API provides adjustable safety settings to manage content filtering during application prototyping. These settings allow developers to configure content restrictions based on four filter categories, ensuring appropriate content for specific use cases.
+
+## Key Concepts
+- **Safety Filters**: Adjustable filters that categorize content as SAFE, DANGEROUS, etc. Developers can allow or restrict content based on these categories.
+- **Built-in Protections**: Certain core harms (e.g., child safety) are always blocked and cannot be adjusted.
+- **Probability Levels**: Content is classified as HIGH, MEDIUM, LOW, or NEGLIGIBLE in terms of being unsafe. Blocking is based on probability, not severity.
+
+## Default Settings
+- By default, the API blocks content with a medium or higher probability of being unsafe across all categories.
+- Default thresholds vary by model:
+  - **Civic Integrity**: Block none for certain models, Block most for others.
+  - **Other Categories**: Block none or Block some, depending on the model.
+
+## Adjusting Safety Settings
+Safety settings can be adjusted per request using the `GenerateContent` API call. The response includes safety feedback, detailing any blocked content.
+
+### Example Code Snippet
+```python
+from google import genai
+from google.genai import types
+import PIL.Image
+
+img = PIL.Image.open("cookies.jpg")
+client = genai.Client(api_key="GEMINI_API_KEY")
+response = client.models.generate_content(
+    model="gemini-2.0-flash",
+    contents=['Do these look store-bought or homemade?', img],
+    config=types.GenerateContentConfig(
+        safety_settings=[
+            types.SafetySetting(
+                category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold=types.HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+            ),
+        ]
+    )
+)
+print(response.text)
+```
+
+## Adjusting in Google AI Studio
+1. Open the Run settings panel.
+2. Click "Edit safety settings" to access the modal.
+3. Use sliders to adjust filtering levels per category.
+
+### Warning Messages
+If content is blocked, a "No Content" warning appears. Hover over the warning for details.
+
+## API Reference
+For detailed API usage, refer to the HarmBlockThreshold API reference and safety filtering documentation.
+
+## Additional Resources
+- Review safety guidance for LLM development.
+- Learn about assessing probability versus severity.
+- Explore the Perspective API for toxicity classification.
+
+## Licensing
+Content is licensed under the Creative Commons Attribution 4.0 License; code samples are under the Apache 2.0 License.
+
+## Text Generation Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Documentation
+
+## Overview
+The Gemini API enables text generation from various input types, including text, images, video, and audio.
+
+## Key Methods
+- **generateContent**: Generates text output based on provided input.
+- **streamGenerateContent**: Streams text output in real-time based on provided input.
+
+## Additional Resources
+- **Vision Understanding**: Refer to the Vision guide for processing images and videos.
+- **Audio Understanding**: Refer to the Audio guide for processing audio files.
+
+## Licensing
+- Content: Creative Commons Attribution 4.0 License
+- Code Samples: Apache 2.0 License
+
+## Trademark Notice
+Java is a registered trademark of Oracle and/or its affiliates. 
+
+For further details, consult the Google Developers Site Policies.
+
+## Understand And Count Tokens Gemini Api Google Ai For Developers Part 1
+
+# Gemini API Token Overview
+
+## Key Concepts
+- **Tokens**: The basic units of processing in Gemini models, which can be single characters or whole words. Long words may be split into multiple tokens.
+- **Vocabulary**: The complete set of tokens used by the model.
+- **Tokenization**: The process of converting text into tokens.
+
+## Token Characteristics
+- A token is approximately equivalent to 4 characters.
+- 100 tokens roughly translate to 60-80 English words.
+
+## Billing Information
+- API call costs are influenced by the number of input and output tokens when billing is enabled.
+
+## Licensing
+- Content is licensed under the Creative Commons Attribution 4.0 License.
+- Code samples are licensed under the Apache 2.0 License. Refer to Google Developers Site Policies for more details.
+
+## Trademark
+- Java is a registered trademark of Oracle and/or its affiliates.

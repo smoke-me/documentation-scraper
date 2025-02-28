@@ -13,7 +13,7 @@ class SummaryCombiner:
     def __init__(self, summaries_dir='summaries'):
         self.summaries_dir = summaries_dir
         self.combined_file = 'combined_summary.txt'
-        self.optimized_combined_file = os.path.join('optimized', 'combined_summary.txt')
+        self.optimized_combined_file = 'optimized_combined_summary.txt'
 
     def extract_title(self, filename: str) -> str:
         """Extract a clean title from the filename."""
@@ -33,7 +33,7 @@ class SummaryCombiner:
             return sections
 
         for filename in sorted(os.listdir(directory)):
-            if filename.endswith('_summary.txt') and filename != 'combined_summary.txt':
+            if filename.endswith('_summary.txt') and not filename.startswith('combined'):
                 filepath = os.path.join(directory, filename)
                 with open(filepath, 'r', encoding='utf-8') as f:
                     content = f.read().strip()
@@ -58,7 +58,6 @@ class SummaryCombiner:
                 combined_text += f"## {section.title}\n\n{section.content}\n\n"
             
             # Save combined summary
-            os.makedirs(self.summaries_dir, exist_ok=True)
             with open(self.combined_file, 'w', encoding='utf-8') as f:
                 f.write(combined_text.strip())
             result['combined'] = self.combined_file
@@ -72,8 +71,7 @@ class SummaryCombiner:
                 for section in sections:
                     combined_text += f"## {section.title}\n\n{section.content}\n\n"
                 
-                # Save combined optimized summary
-                os.makedirs(optimized_dir, exist_ok=True)
+                # Save combined optimized summary directly to root
                 with open(self.optimized_combined_file, 'w', encoding='utf-8') as f:
                     f.write(combined_text.strip())
                 result['optimized_combined'] = self.optimized_combined_file

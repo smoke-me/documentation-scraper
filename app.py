@@ -224,17 +224,28 @@ async def download_results(type: str, request: Request):
 
     # Handle single file downloads
     if type in ["combined", "optimized_combined"]:
-        filepath = os.path.join(
-            "summaries",
-            "optimized" if type == "optimized_combined" else "",
-            "combined_summary.txt"
+        filepath = (
+            "optimized_combined_summary.txt"
+            if type == "optimized_combined"
+            else "combined_summary.txt"
         )
         if not os.path.exists(filepath):
             raise HTTPException(status_code=404, detail=f"No {type} summary available")
-        return FileResponse(
-            filepath,
+        
+        # Read file content and return as StreamingResponse
+        async def file_stream():
+            with open(filepath, 'rb') as f:
+                while chunk := f.read(8192):
+                    yield chunk
+        
+        return StreamingResponse(
+            file_stream(),
             media_type="text/plain",
-            filename=f"{type}_summary.txt"
+            headers={
+                "Content-Disposition": f'attachment; filename="{type}_summary.txt"',
+                "Cache-Control": "no-cache",
+                "Content-Type": "text/plain; charset=utf-8"
+            }
         )
 
     # Handle directory downloads
@@ -260,10 +271,20 @@ async def download_results(type: str, request: Request):
                     zip_file.write(file_path, arc_name)
 
     zip_buffer.seek(0)
+    
+    # Stream the zip file
+    async def zip_stream():
+        while chunk := zip_buffer.read(8192):
+            yield chunk
+        zip_buffer.close()
+    
     return StreamingResponse(
-        zip_buffer,
+        zip_stream(),
         media_type="application/zip",
-        headers={"Content-Disposition": f'attachment; filename="{type}.zip"'}
+        headers={
+            "Content-Disposition": f'attachment; filename="{type}.zip"',
+            "Cache-Control": "no-cache"
+        }
     )
 
 @app.get("/")
