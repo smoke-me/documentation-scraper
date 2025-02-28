@@ -13,6 +13,7 @@ from web_scraper import WebScraper
 from text_processor import TextProcessor
 from gpt_summarizer import GPTSummarizer
 from summary_combiner import SummaryCombiner
+from clean import cleanup_files
 
 app = FastAPI()
 
@@ -30,6 +31,17 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Store active processes
 active_processes: Dict[str, asyncio.Task] = {}
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup when the server shuts down."""
+    # Cancel all active processes
+    for process in active_processes.values():
+        process.cancel()
+    active_processes.clear()
+    
+    # Clean up all generated files
+    cleanup_files()
 
 class ProcessRequest(BaseModel):
     url: str
@@ -214,6 +226,8 @@ async def cancel_process(request: Request):
     if request_id in active_processes:
         active_processes[request_id].cancel()
         del active_processes[request_id]
+        # Clean up files when process is cancelled
+        cleanup_files()
     
     return {"status": "cancelled"}
 
@@ -224,17 +238,27 @@ async def download_results(type: str, request: Request):
 
     # Handle single file downloads
     if type in ["combined", "optimized_combined"]:
-        filepath = os.path.join(
-            "summaries",
-            "optimized" if type == "optimized_combined" else "",
-            "combined_summary.txt"
+        filepath = (
+            os.path.join("optimized", "combined_summary.txt")
+            if type == "optimized_combined"
+            else "combined_summary.txt"
         )
         if not os.path.exists(filepath):
             raise HTTPException(status_code=404, detail=f"No {type} summary available")
-        return FileResponse(
-            filepath,
+        
+        # Read file content and return as StreamingResponse
+        async def file_stream():
+            with open(filepath, 'rb') as f:
+                while chunk := f.read(8192):
+                    yield chunk
+        
+        return StreamingResponse(
+            file_stream(),
             media_type="text/plain",
-            filename=f"{type}_summary.txt"
+            headers={
+                "Content-Disposition": f'attachment; filename="{type}_summary.txt"',
+                "Cache-Control": "no-cache"
+            }
         )
 
     # Handle directory downloads
@@ -260,10 +284,20 @@ async def download_results(type: str, request: Request):
                     zip_file.write(file_path, arc_name)
 
     zip_buffer.seek(0)
+    
+    # Stream the zip file
+    async def zip_stream():
+        while chunk := zip_buffer.read(8192):
+            yield chunk
+        zip_buffer.close()
+    
     return StreamingResponse(
-        zip_buffer,
+        zip_stream(),
         media_type="application/zip",
-        headers={"Content-Disposition": f'attachment; filename="{type}.zip"'}
+        headers={
+            "Content-Disposition": f'attachment; filename="{type}.zip"',
+            "Cache-Control": "no-cache"
+        }
     )
 
 @app.get("/")
