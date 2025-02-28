@@ -5,7 +5,7 @@ import zipfile
 import signal
 import atexit
 from io import BytesIO
-from typing import Dict, List
+from typing import Dict, List, Set
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.responses import StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -16,6 +16,7 @@ from text_processor import TextProcessor
 from gpt_summarizer import GPTSummarizer
 from summary_combiner import SummaryCombiner
 from clean import cleanup_files
+from starlette.background import BackgroundTask
 
 app = FastAPI()
 
@@ -31,8 +32,25 @@ app.add_middleware(
 # Serve static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Store active processes
+# Store active processes and their states
 active_processes: Dict[str, asyncio.Task] = {}
+active_connections: Set[str] = set()
+
+def cleanup_for_request(request_id: str):
+    """Clean up resources for a specific request."""
+    if request_id in active_processes:
+        try:
+            active_processes[request_id].cancel()
+        except Exception:
+            pass
+        del active_processes[request_id]
+    
+    if request_id in active_connections:
+        active_connections.remove(request_id)
+    
+    # Only clean files if this was the last active connection
+    if not active_connections:
+        cleanup_files()
 
 # Register cleanup for normal shutdown
 @app.on_event("shutdown")
@@ -40,8 +58,12 @@ async def shutdown_event():
     """Cleanup when the server shuts down."""
     # Cancel all active processes
     for process in active_processes.values():
-        process.cancel()
+        try:
+            process.cancel()
+        except Exception:
+            pass
     active_processes.clear()
+    active_connections.clear()
     
     # Clean up all generated files
     cleanup_files()
@@ -50,6 +72,13 @@ async def shutdown_event():
 def signal_handler(signum, frame):
     """Handle system signals for cleanup."""
     print("\nCleaning up before exit...")
+    for process in active_processes.values():
+        try:
+            process.cancel()
+        except Exception:
+            pass
+    active_processes.clear()
+    active_connections.clear()
     cleanup_files()
     exit(0)
 
@@ -60,21 +89,38 @@ signal.signal(signal.SIGTERM, signal_handler)  # Termination request
 # Register cleanup on normal exit
 atexit.register(cleanup_files)
 
-# Middleware to handle client disconnection
+# Middleware to handle client disconnection and page reloads
 @app.middleware("http")
 async def check_client_disconnect(request: Request, call_next):
+    # Generate request ID
+    request_id = str(hash(request.query_params.get("url", "") + request.headers.get("X-API-Key", "")))
+    
     try:
+        # Add to active connections
+        active_connections.add(request_id)
+        
+        # Handle the request
         response = await call_next(request)
+        
+        # Add cleanup task for streaming responses
+        if isinstance(response, StreamingResponse):
+            cleanup_task = BackgroundTask(cleanup_for_request, request_id)
+            response.background = cleanup_task
+        
         return response
+        
     except Exception as e:
-        # If client disconnects, clean up their specific process
-        if "Client disconnected" in str(e):
-            request_id = str(hash(request.query_params.get("url", "") + request.headers.get("X-API-Key", "")))
-            if request_id in active_processes:
-                active_processes[request_id].cancel()
-                del active_processes[request_id]
-                cleanup_files()
+        # Handle disconnection or error
+        cleanup_for_request(request_id)
+        if "Client disconnected" in str(e) or "Disconnected" in str(e):
+            print(f"Client disconnected: {request_id}")
         raise
+    finally:
+        # Ensure connection is removed if there's an error
+        if request_id in active_connections:
+            active_connections.remove(request_id)
+            if not active_connections:  # If this was the last connection
+                cleanup_files()
 
 class ProcessRequest(BaseModel):
     url: str
@@ -247,14 +293,14 @@ async def start_process(request: Request, process_request: ProcessRequest):
     
     # Cancel existing process if any
     if request_id in active_processes:
-        active_processes[request_id].cancel()
-        del active_processes[request_id]
+        cleanup_for_request(request_id)
 
     async def event_stream():
         try:
             async for data in process_documentation(request_id, process_request.url, api_key, process_request.token_limit):
                 yield data
         except asyncio.CancelledError:
+            cleanup_for_request(request_id)
             yield json.dumps({
                 "progress": 0,
                 "status": "Process cancelled by user",
@@ -262,6 +308,7 @@ async def start_process(request: Request, process_request: ProcessRequest):
                 "available": []
             }) + "\n"
         except Exception as e:
+            cleanup_for_request(request_id)
             error_message = f"Unexpected error: {str(e)}"
             print(f"Stream error: {error_message}")  # Log error to console
             yield json.dumps({
@@ -278,7 +325,8 @@ async def start_process(request: Request, process_request: ProcessRequest):
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "X-Accel-Buffering": "no"
-        }
+        },
+        background=BackgroundTask(cleanup_for_request, request_id)
     )
 
 @app.post("/api/cancel")
