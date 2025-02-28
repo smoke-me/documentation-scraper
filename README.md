@@ -19,8 +19,12 @@ A powerful tool for automated documentation analysis and summarization. This too
 
 1. Clone the repository
 2. Install dependencies: `pip install -r requirements.txt`
-3. Run the web interface: `python -m uvicorn app:app --reload`
-4. Open http://localhost:8000 in your browser
+3. Set up your OpenAI API key in `.env` file:
+   ```
+   OPENAI_API_KEY=your_api_key_here
+   ```
+4. Run the web interface: `python -m uvicorn app:app --reload`
+5. Open http://localhost:8000 in your browser
 
 ## Usage
 
@@ -28,15 +32,11 @@ A powerful tool for automated documentation analysis and summarization. This too
 1. Navigate to http://localhost:8000
 2. Enter the documentation URL you want to analyze
 3. Set your desired token limit (default: 32,000)
-4. Enter your OpenAI API key (only stored temporarily in memory)
-5. Start the process and monitor progress
-6. Download generated summaries
+4. Start the process and monitor progress
+5. Download generated summaries
 
 ### CLI
 ```bash
-# First set up your OpenAI API key in .env file:
-# OPENAI_API_KEY=your_api_key_here
-
 # Process a URL with default settings
 python main.py --url https://example.com
 
