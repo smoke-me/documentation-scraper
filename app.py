@@ -152,14 +152,47 @@ async def process_documentation(request_id: str, url: str, api_key: str, token_l
             "complete": False
         }) + "\n"
 
-        combiner = SummaryCombiner()
+        combiner = SummaryCombiner(max_tokens=token_limit)
         combined = combiner.combine_summaries()
         
-        yield json.dumps({
-            "progress": 90,
-            "status": "Summaries combined successfully",
-            "complete": False
-        }) + "\n"
+        # Get token counts from combined summaries
+        import tiktoken
+        tokenizer = tiktoken.get_encoding("cl100k_base")
+        
+        total_tokens = 0
+        if os.path.exists('combined_summary.txt'):
+            with open('combined_summary.txt', 'r', encoding='utf-8') as f:
+                content = f.read()
+                total_tokens = len(tokenizer.encode(content))
+        
+        # Report token count and optimization status
+        if total_tokens > token_limit:
+            yield json.dumps({
+                "progress": 85,
+                "status": f"Initial summary exceeds token limit ({total_tokens}/{token_limit} tokens). Starting optimization...",
+                "complete": False
+            }) + "\n"
+            
+            # Wait for optimized summary
+            optimized_path = 'optimized_combined_summary.txt'
+            for _ in range(30):  # Wait up to 30 seconds
+                if os.path.exists(optimized_path):
+                    with open(optimized_path, 'r', encoding='utf-8') as f:
+                        optimized_content = f.read()
+                        optimized_tokens = len(tokenizer.encode(optimized_content))
+                    yield json.dumps({
+                        "progress": 90,
+                        "status": f"Optimization complete. Final token count: {optimized_tokens}/{token_limit}",
+                        "complete": False
+                    }) + "\n"
+                    break
+                await asyncio.sleep(1)
+        else:
+            yield json.dumps({
+                "progress": 85,
+                "status": f"Summary within token limit ({total_tokens}/{token_limit} tokens). No optimization needed.",
+                "complete": False
+            }) + "\n"
 
         # Check available outputs
         yield json.dumps({
@@ -170,7 +203,7 @@ async def process_documentation(request_id: str, url: str, api_key: str, token_l
 
         has_optimized = os.path.exists(os.path.join('summaries', 'optimized'))
         has_combined = os.path.exists('combined_summary.txt')
-        has_optimized_combined = os.path.exists(os.path.join('optimized', 'combined_summary.txt'))
+        has_optimized_combined = os.path.exists('optimized_combined_summary.txt')
 
         available = ["summaries", "chunks", "docs"]
         if has_optimized:
