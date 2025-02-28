@@ -2,6 +2,8 @@ import os
 import json
 import asyncio
 import zipfile
+import signal
+import atexit
 from io import BytesIO
 from typing import Dict, List
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
@@ -13,6 +15,7 @@ from web_scraper import WebScraper
 from text_processor import TextProcessor
 from gpt_summarizer import GPTSummarizer
 from summary_combiner import SummaryCombiner
+from clean import cleanup_files
 
 app = FastAPI()
 
@@ -30,6 +33,48 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Store active processes
 active_processes: Dict[str, asyncio.Task] = {}
+
+# Register cleanup for normal shutdown
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup when the server shuts down."""
+    # Cancel all active processes
+    for process in active_processes.values():
+        process.cancel()
+    active_processes.clear()
+    
+    # Clean up all generated files
+    cleanup_files()
+
+# Register cleanup for system signals
+def signal_handler(signum, frame):
+    """Handle system signals for cleanup."""
+    print("\nCleaning up before exit...")
+    cleanup_files()
+    exit(0)
+
+# Register signal handlers
+signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
+signal.signal(signal.SIGTERM, signal_handler)  # Termination request
+
+# Register cleanup on normal exit
+atexit.register(cleanup_files)
+
+# Middleware to handle client disconnection
+@app.middleware("http")
+async def check_client_disconnect(request: Request, call_next):
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as e:
+        # If client disconnects, clean up their specific process
+        if "Client disconnected" in str(e):
+            request_id = str(hash(request.query_params.get("url", "") + request.headers.get("X-API-Key", "")))
+            if request_id in active_processes:
+                active_processes[request_id].cancel()
+                del active_processes[request_id]
+                cleanup_files()
+        raise
 
 class ProcessRequest(BaseModel):
     url: str
