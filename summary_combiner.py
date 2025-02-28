@@ -12,8 +12,8 @@ class SummarySection:
 class SummaryCombiner:
     def __init__(self, summaries_dir='summaries'):
         self.summaries_dir = summaries_dir
-        self.combined_file = os.path.join(summaries_dir, 'combined_summary.txt')
-        self.optimized_combined_file = os.path.join(summaries_dir, 'optimized', 'combined_summary.txt')
+        self.combined_file = 'combined_summary.txt'
+        self.optimized_combined_file = os.path.join('optimized', 'combined_summary.txt')
 
     def extract_title(self, filename: str) -> str:
         """Extract a clean title from the filename."""

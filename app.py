@@ -124,8 +124,8 @@ async def process_documentation(request_id: str, url: str, api_key: str, token_l
         }) + "\n"
 
         has_optimized = os.path.exists(os.path.join('summaries', 'optimized'))
-        has_combined = os.path.exists(os.path.join('summaries', 'combined_summary.txt'))
-        has_optimized_combined = os.path.exists(os.path.join('summaries', 'optimized', 'combined_summary.txt'))
+        has_combined = os.path.exists('combined_summary.txt')
+        has_optimized_combined = os.path.exists(os.path.join('optimized', 'combined_summary.txt'))
 
         available = ["summaries", "chunks", "docs"]
         if has_optimized:

@@ -4,48 +4,43 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-A tool for keeping AI documentation up-to-date. Many AI models and APIs have rapidly changing documentation that can become outdated. This tool scrapes, processes, and summarizes documentation using GPT to help maintain current understanding of AI capabilities and features.
+A powerful tool for automated documentation analysis and summarization. This tool scrapes, processes, and summarizes documentation using GPT-4o-mini to help maintain current understanding of technical documentation, APIs, and features. It's particularly useful for keeping track of rapidly changing documentation in the AI and technology space.
 
 ## Features
 
-- Scrapes documentation from any website
-- Processes text into optimized chunks
-- Generates concise summaries using GPT
-- Clean web interface and CLI options
-- Automatic token management and optimization
-- Download options for summaries and raw data
+- **Web Scraping**: Intelligent extraction of documentation from any website
+- **Smart Text Processing**: Automatic chunking and optimization of content
+- **AI-Powered Summarization**: Generates concise, accurate summaries using GPT-4o-mini
+- **Token Optimization**: Automatic management of token limits with smart batching
+- **Dual Interface**: Both web UI and CLI options available
+- **Flexible Output**: Multiple output formats and optimization levels
 
 ## Quick Start
 
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment
-cp .env.example .env  # Then add your OpenAI API key
-
-# Run web interface
-python -m uvicorn app:app --reload
-
-# Or use CLI
-python main.py --url https://example.com
-```
+1. Clone the repository
+2. Install dependencies: `pip install -r requirements.txt`
+3. Set up your OpenAI API key in `.env` file:
+   ```
+   OPENAI_API_KEY=your_api_key_here
+   ```
+4. Run the web interface: `python -m uvicorn app:app --reload`
+5. Open http://localhost:8000 in your browser
 
 ## Usage
 
 ### Web Interface
-1. Open http://localhost:8000
-2. Enter documentation URL
-3. Set token limit (default: 32,000)
-4. Add your OpenAI API key
+1. Navigate to http://localhost:8000
+2. Enter the documentation URL you want to analyze
+3. Set your desired token limit (default: 32,000)
+4. Start the process and monitor progress
 5. Download generated summaries
 
 ### CLI
 ```bash
-# Basic usage
+# Process a URL with default settings
 python main.py --url https://example.com
 
-# With options
+# Customize processing
 python main.py --url https://example.com --token-limit 16000 --api-key YOUR_API_KEY
 
 # Run specific modules
@@ -55,32 +50,50 @@ python main.py --module summarizer
 python main.py --module combiner
 ```
 
+## Output Structure
+
+The tool generates several output files and directories:
+
+- `documentation/`: Raw scraped content
+- `chunks/`: Processed text chunks
+- `summaries/`: Individual section summaries
+- `summaries/optimized/`: Token-optimized summaries (if needed)
+- `combined_summary.txt`: Complete combined summary
+- `optimized/combined_summary.txt`: Token-optimized combined summary
+
 ## API Endpoints
 
-- `POST /api/process`: Start processing a URL
-- `POST /api/cancel`: Cancel current processing
+- `POST /api/process`: Start documentation processing
+  - Parameters: `url`, `token_limit`, `api_key`
+  - Returns: Server-sent events with progress updates
+- `POST /api/cancel`: Cancel ongoing processing
 - `GET /api/download/{type}`: Download results
+  - Types: `summaries`, `chunks`, `docs`, `combined`, `optimized`
 
 ## Requirements
 
-- Python 3.10+
+- Python 3.10 or higher
 - OpenAI API key
-- Required packages in `requirements.txt`
+- Dependencies listed in `requirements.txt`
 
 ## Development
 
-1. Clone the repository
-2. Install dependencies: `pip install -r requirements.txt`
-3. Add OpenAI API key to `.env`
-4. Run: `python -m uvicorn app:app --reload`
+1. Fork the repository
+2. Create a virtual environment: `python -m venv venv`
+3. Activate the environment:
+   - Windows: `venv\Scripts\activate`
+   - Unix/macOS: `source venv/bin/activate`
+4. Install dev dependencies: `pip install -r requirements.txt`
+5. Run tests: `python -m pytest`
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make changes
-4. Create a Pull Request
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes
+4. Run tests and ensure they pass
+5. Create a Pull Request with a clear description
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
