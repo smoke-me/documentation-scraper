@@ -43,17 +43,46 @@ class GPTSummarizer:
         """Count tokens in text."""
         return len(self.encoding.encode(text))
 
-    async def generate_summary(self, text: str, is_second_stage: bool = False) -> Optional[str]:
+    async def generate_summary(self, text: str, is_second_stage: bool = False, is_third_stage: bool = False) -> Optional[str]:
         """Generate a concise documentation summary using GPT-4o-mini."""
         try:
-            system_message = (
-                "You are a technical documentation expert. Create a highly optimized summary that preserves all key information "
-                "while being as concise as possible. Focus on technical accuracy and eliminate any redundancy or verbosity. "
-                "If this is a second-stage summary, be extremely aggressive in condensing information while maintaining technical accuracy."
-            ) if is_second_stage else (
-                "You are a technical documentation expert. Summarize the following text into clear, concise documentation format. "
-                "Focus on key concepts, functionality, and important details. Remove any unnecessary verbosity while maintaining technical accuracy."
-            )
+            if is_third_stage:
+                system_message = (
+                    "You are a technical documentation expert tasked with EXTREME summarization. "
+                    "Your goal is to create an ultra-compact summary that ONLY includes:\n"
+                    "1. Core functionality and usage patterns\n"
+                    "2. Critical API endpoints and parameters\n"
+                    "3. Essential configuration options\n"
+                    "AGGRESSIVELY remove:\n"
+                    "- All explanatory text that isn't absolutely necessary\n"
+                    "- Background information\n"
+                    "- Implementation details\n"
+                    "- Examples unless they're the only way to convey usage\n"
+                    "- Any word that can be removed without losing core meaning\n"
+                    "Be ruthless in condensing - every single character counts."
+                )
+            elif is_second_stage:
+                system_message = (
+                    "You are a technical documentation expert focused on extreme summarization. "
+                    "Create a highly optimized summary that preserves essential information while "
+                    "being as concise as possible. Focus ONLY on:\n"
+                    "1. Key functionality and usage\n"
+                    "2. Critical parameters and configurations\n"
+                    "3. Essential technical details\n"
+                    "Remove ALL:\n"
+                    "- Explanatory text that isn't crucial\n"
+                    "- Redundant information\n"
+                    "- Verbose descriptions\n"
+                    "- Non-essential examples\n"
+                    "Every word must justify its existence."
+                )
+            else:
+                system_message = (
+                    "You are a technical documentation expert. Summarize the following text into clear, "
+                    "concise documentation format. Focus on key concepts, functionality, and important "
+                    "details. Remove any unnecessary verbosity while maintaining technical accuracy. "
+                    "Prioritize information about usage and configuration over explanations."
+                )
 
             response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
@@ -64,7 +93,11 @@ class GPTSummarizer:
                     },
                     {
                         "role": "user",
-                        "content": text
+                        "content": (
+                            "Create an extremely concise summary. Focus on usage, parameters, and configuration. "
+                            "Remove all unnecessary words. The summary must be as short as possible while retaining "
+                            "critical technical information.\n\n" + text
+                        )
                     }
                 ],
                 temperature=0.3,
@@ -136,7 +169,7 @@ class GPTSummarizer:
         return tasks
 
     async def optimize_summaries(self):
-        """Create optimized second-stage summaries if needed."""
+        """Create optimized second-stage and third-stage summaries if needed."""
         # Get total token count of all summaries
         total_tokens = 0
         summaries = []
@@ -186,11 +219,12 @@ class GPTSummarizer:
         if current_batch:
             batches.append(current_batch)
         
-        # Process each batch
+        # Process each batch with second-stage optimization
         optimized_dir = os.path.join(self.output_dir, "optimized")
         if not os.path.exists(optimized_dir):
             os.makedirs(optimized_dir)
         
+        second_stage_results = []
         for i, batch in enumerate(batches):
             # Combine summaries in batch
             combined_text = "\n\n---\n\n".join(
@@ -204,10 +238,34 @@ class GPTSummarizer:
                 output_path=os.path.join(optimized_dir, f"optimized_batch_{i+1}.txt")
             )
             
-            # Process the batch
+            # Process the batch with second-stage optimization
             result = await self.process_chunk(batch_task, is_second_stage=True)
             if result:
-                print(f"✓ Optimized batch {i+1}: {result.token_count} tokens")
+                print(f"✓ Optimized batch {i+1} (second stage): {result.token_count} tokens")
+                second_stage_results.append(result)
+        
+        # Check if we need third-stage optimization
+        second_stage_tokens = sum(result.token_count for result in second_stage_results)
+        if second_stage_tokens > self.target_token_limit:
+            print(f"Second stage still exceeds limit ({second_stage_tokens} tokens). Starting third-stage optimization...")
+            
+            # Combine all second-stage results
+            combined_text = "\n\n---\n\n".join(
+                f"# Batch {i+1}\n{task.content}" 
+                for i, task in enumerate(second_stage_results)
+            )
+            
+            # Create final optimization task
+            final_task = SummaryTask(
+                filename="final_optimized_summary.txt",
+                content=combined_text,
+                output_path=os.path.join(optimized_dir, "final_optimized_summary.txt")
+            )
+            
+            # Process with third-stage optimization
+            final_result = await self.process_chunk(final_task, is_third_stage=True)
+            if final_result:
+                print(f"✓ Final optimization complete: {final_result.token_count} tokens")
         
         print(f"✓ Created optimized summaries in {optimized_dir}/")
 

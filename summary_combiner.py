@@ -104,6 +104,19 @@ class SummaryCombiner:
         """Combine summaries into a single coherent document."""
         result = {}
         
+        # First check for final optimized summary
+        optimized_dir = os.path.join(self.summaries_dir, 'optimized')
+        final_optimized = os.path.join(optimized_dir, 'final_optimized_summary.txt')
+        
+        if os.path.exists(final_optimized):
+            # Use the final optimized summary directly
+            with open(final_optimized, 'r', encoding='utf-8') as f:
+                final_content = f.read()
+                with open(self.optimized_combined_file, 'w', encoding='utf-8') as out:
+                    out.write(final_content)
+                result['optimized_combined'] = self.optimized_combined_file
+                return result
+        
         # Process regular summaries
         sections = self.read_summaries(self.summaries_dir)
         if sections:
@@ -121,35 +134,26 @@ class SummaryCombiner:
             
             # Check if optimization is needed
             if total_tokens > self.max_tokens:
-                print(f"Total tokens ({total_tokens}) exceed limit ({self.max_tokens}). Optimizing...")
+                print(f"Total tokens ({total_tokens}) exceed limit ({self.max_tokens}). Using optimized summaries...")
                 
-                # Create optimized directory
-                optimized_dir = os.path.join(self.summaries_dir, 'optimized')
-                os.makedirs(optimized_dir, exist_ok=True)
-                
-                # Group sections intelligently
-                batches = self.optimize_sections(sections)
-                
-                # Save each batch for optimization
-                for i, (title, batch) in enumerate(batches):
-                    batch_content = f"# {title}\n\n"
-                    for section in batch:
-                        batch_content += f"## {section.title}\n\n{section.content}\n\n"
-                    
-                    batch_file = os.path.join(optimized_dir, f"batch_{i+1}_summary.txt")
-                    with open(batch_file, 'w', encoding='utf-8') as f:
-                        f.write(batch_content.strip())
-                
-                # Process optimized summaries
+                # Try to use second-stage optimized summaries
                 optimized_sections = self.read_summaries(optimized_dir)
                 if optimized_sections:
-                    combined_text = "# Combined Optimized Documentation Summary\n\n"
-                    for section in optimized_sections:
-                        combined_text += f"## {section.title}\n\n{section.content}\n\n"
+                    optimized_text = "# Optimized Documentation Summary\n\n"
+                    optimized_tokens = 0
                     
-                    # Save combined optimized summary directly to root
+                    # Sort sections by importance (assuming shorter sections are more optimized/important)
+                    optimized_sections.sort(key=lambda x: x.token_count)
+                    
+                    for section in optimized_sections:
+                        optimized_tokens += section.token_count
+                        if optimized_tokens > self.max_tokens:
+                            print(f"Warning: Optimized summary still exceeds token limit ({optimized_tokens}/{self.max_tokens})")
+                        optimized_text += f"## {section.title}\n\n{section.content}\n\n"
+                    
+                    # Save optimized combined summary
                     with open(self.optimized_combined_file, 'w', encoding='utf-8') as f:
-                        f.write(combined_text.strip())
+                        f.write(optimized_text.strip())
                     result['optimized_combined'] = self.optimized_combined_file
         
         return result
