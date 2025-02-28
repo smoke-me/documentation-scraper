@@ -1,5 +1,0 @@
-{
-  "text": "# Understand and count tokens ___ Gemini API ___ Google AI for Developers Gemini and other generative AI models process input and output at a granularity called a token. Tokens can be single characters like z or whole words like cat. Long words are broken up into several tokens. The set of all tokens used by the model is called the vocabulary, and the process of splitting text into tokens is called tokenization. For Gemini models, a token is equivalent to about 4 characters. 100 tokens is equal to about 60-80 English words. When billing is enabled, the cost of a call to the Gemini API is determined in part by the number of input and output tokens, so knowing how to count tokens can be helpful. Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.",
-  "source": "Understand and count tokens ___ Gemini API ___ Google AI for Developers.txt",
-  "token_count": 242
-}

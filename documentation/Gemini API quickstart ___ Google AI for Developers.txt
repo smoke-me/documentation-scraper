@@ -1,4 +1,0 @@
-URL: https://ai.google.dev/gemini-api/docs/quickstart
-Token Count: 117
-
-This quickstart shows you how to install your SDK of choice and then make your first Gemini API request. Use the generateContent method to send a request to the Gemini API. Now that you made your first API request, you might want to explore the following guides which showcase Gemini in action: Except as otherwise noted, the content of this page is licensed under the Creative Commons Attribution 4.0 License, and code samples are licensed under the Apache 2.0 License. For details, see the Google Developers Site Policies. Java is a registered trademark of Oracle and/or its affiliates.
